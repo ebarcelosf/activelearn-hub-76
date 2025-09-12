@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useInRouterContext } from 'react-router-dom';
 import { 
   Lightbulb, 
   Search, 
@@ -23,7 +23,7 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+const SidebarInner: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
   const { currentProject, getProjectProgress } = useProjects();
   
@@ -196,4 +196,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       )}
     </AnimatePresence>
   );
+};
+
+export const Sidebar: React.FC<SidebarProps> = (props) => {
+  const inRouter = useInRouterContext();
+  if (!inRouter) return null;
+  return <SidebarInner {...props} />;
 };

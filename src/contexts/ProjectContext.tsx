@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import * as React from 'react';
 import { Project } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { v4 as uuidv4 } from 'uuid';
@@ -14,10 +14,10 @@ interface ProjectContextType {
   getProjectProgress: (project: Project) => number;
 }
 
-const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
+const ProjectContext = React.createContext<ProjectContextType | undefined>(undefined);
 
 export const useProjects = () => {
-  const context = useContext(ProjectContext);
+  const context = React.useContext(ProjectContext);
   if (context === undefined) {
     throw new Error('useProjects must be used within a ProjectProvider');
   }
@@ -26,7 +26,7 @@ export const useProjects = () => {
 
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [projects, setProjects] = useLocalStorage<Project[]>('activelearn_projects', []);
-  const [currentProject, setCurrentProject] = useState<Project | null>(null);
+  const [currentProject, setCurrentProject] = React.useState<Project | null>(null);
 
   const createProject = (title: string, description: string): Project => {
     const newProject: Project = {

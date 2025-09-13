@@ -46,13 +46,18 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
   }
 
   function toggleActivityStatus(id: string) {
-    const activities = (data.activities || []).map((act: any) =>
-      act.id === id ? {
+    const activities = (data.activities || []).map((act: any) => {
+      if (act.id !== id) return act;
+      const current: 'planned' | 'in-progress' | 'completed' = act.status || 'planned';
+      const next: 'planned' | 'in-progress' | 'completed' =
+        current === 'planned' ? 'in-progress' : current === 'in-progress' ? 'completed' : 'planned';
+      return {
         ...act,
-        status: act.status === 'completed' ? 'pending' : 'completed',
-        completedAt: act.status === 'pending' ? new Date().toISOString() : null
-      } : act
-    );
+        status: next,
+        completedAt: next === 'completed' ? new Date().toISOString() : undefined,
+        updatedAt: new Date().toISOString(),
+      };
+    });
     update('activities', activities);
   }
 

@@ -197,7 +197,8 @@ export const ActivityManager: React.FC<ActivityManagerProps> = ({
       {/* Lista de atividades */}
       <div className="space-y-4">
         {activities.map(activity => {
-          const StatusIcon = statusConfig[activity.status].icon;
+          const statusInfo = statusConfig[activity.status as keyof typeof statusConfig] ?? statusConfig['planned'];
+          const StatusIcon = statusInfo.icon;
           const typeLabel = activityTypes.find(t => t.value === activity.type)?.label || activity.type;
 
           return (
@@ -208,9 +209,9 @@ export const ActivityManager: React.FC<ActivityManagerProps> = ({
                     <CardTitle className="text-base mb-2">{activity.title}</CardTitle>
                     <div className="flex items-center gap-3 text-sm text-muted-foreground">
                       <Badge variant="outline">{typeLabel}</Badge>
-                      <Badge className={statusConfig[activity.status].color}>
+                      <Badge className={statusInfo.color}>
                         <StatusIcon className="w-3 h-3 mr-1" />
-                        {statusConfig[activity.status].label}
+                        {statusInfo.label}
                       </Badge>
                     </div>
                   </div>

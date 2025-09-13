@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { PhaseSidebar, NudgeModal } from './CBLHelpers';
 import { EngagePane } from './EngagePane';
 import { InvestigatePane } from './InvestigatePane';
@@ -8,8 +9,11 @@ import { useProjects } from '@/contexts/ProjectContext';
 
 export const CBLScreen: React.FC = () => {
   const { currentProject, updateProject } = useProjects();
-  const [phase, setPhase] = useState('engage');
+  const { phase } = useParams<{ phase: string }>();
+  const navigate = useNavigate();
   const [nudgeOpen, setNudgeOpen] = useState(false);
+  
+  const currentPhase = phase || 'engage';
 
   if (!currentProject) {
     return (
@@ -27,11 +31,15 @@ export const CBLScreen: React.FC = () => {
     updateProject(currentProject.id, { [field]: value });
   };
 
+  const handlePhaseChange = (newPhase: string) => {
+    navigate(`/project/${currentProject.id}/${newPhase}`);
+  };
+
   return (
     <div className="flex gap-6 p-6">
       <PhaseSidebar 
-        phase={phase} 
-        setPhase={setPhase} 
+        phase={currentPhase} 
+        setPhase={handlePhaseChange} 
         project={currentProject} 
       />
       
@@ -41,7 +49,7 @@ export const CBLScreen: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-foreground">
-                  Fase {phase} — {currentProject.title}
+                  Fase {currentPhase} — {currentProject.title}
                 </h2>
                 <div className="text-sm text-muted-foreground mt-1">
                   Use os nudges para orientação em cada etapa.
@@ -53,19 +61,19 @@ export const CBLScreen: React.FC = () => {
             </div>
 
             <div className="mt-6">
-              {phase === 'engage' && (
+              {currentPhase === 'engage' && (
                 <EngagePane 
                   data={currentProject} 
                   update={handleUpdate}
                 />
               )}
-              {phase === 'investigate' && (
+              {currentPhase === 'investigate' && (
                 <InvestigatePane 
                   data={currentProject} 
                   update={handleUpdate}
                 />
               )}
-              {phase === 'act' && (
+              {currentPhase === 'act' && (
                 <ActPane 
                   data={currentProject} 
                   update={handleUpdate}
@@ -78,7 +86,7 @@ export const CBLScreen: React.FC = () => {
 
       <NudgeModal 
         visible={nudgeOpen} 
-        phase={phase} 
+        phase={currentPhase} 
         project={currentProject} 
         onClose={() => setNudgeOpen(false)}
       />

@@ -53,7 +53,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
   };
 
   const handleOpenProject = () => {
-    navigate(`/project/${project.id}/engage`);
+    // Navegar para a fase atual do projeto ou a primeira fase acessível
+    const currentPhase = project.phase || 'engage';
+    navigate(`/project/${project.id}/${currentPhase}`);
   };
 
   const handleDuplicate = () => {

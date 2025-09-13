@@ -9,35 +9,117 @@ interface PhaseSidebarProps {
   project: any;
 }
 
+// Função para verificar se uma fase pode ser acessada
+const canAccessPhase = (phase: string, project: any): boolean => {
+  switch (phase) {
+    case 'engage':
+      return true; // Sempre pode acessar a primeira fase
+    
+    case 'investigate':
+      // Só pode acessar se Engage estiver concluído
+      return !!(project.bigIdea && project.essentialQuestion);
+    
+    case 'act':
+      // Só pode acessar se Investigate estiver concluído
+      const investigateComplete = !!(
+        project.bigIdea && 
+        project.essentialQuestion && 
+        project.guidingQuestions.length > 0 &&
+        project.guidingActivities.length > 0 &&
+        project.researchSynthesis
+      );
+      return investigateComplete;
+    
+    default:
+      return false;
+  }
+};
+
 export const PhaseSidebar: React.FC<PhaseSidebarProps> = ({ phase, setPhase, project }) => {
   const phases = [
-    { id: 'engage', label: 'Engage', color: 'hsl(var(--primary))' },
-    { id: 'investigate', label: 'Investigate', color: 'hsl(var(--secondary))' },
-    { id: 'act', label: 'Act', color: 'hsl(var(--accent))' }
+    { id: 'engage', name: 'Engage', icon: '🎯', description: 'Identifique o problema' },
+    { id: 'investigate', name: 'Investigate', icon: '🔍', description: 'Pesquise e analise' },
+    { id: 'act', name: 'Act', icon: '⚡', description: 'Desenvolva soluções' }
   ];
 
   return (
-    <aside className="w-72 p-6 rounded-xl bg-card border shadow-sm">
-      <h4 className="font-semibold text-foreground text-lg mb-6">Fases CBL</h4>
-      <div className="flex flex-col gap-4">
-        {phases.map(p => (
-          <button 
-            key={p.id} 
-            onClick={() => setPhase(p.id)} 
-            className={`text-left px-4 py-4 rounded-xl flex items-center justify-between transition-all duration-200 ${
-              phase === p.id 
-                ? 'ring-2 ring-primary bg-muted shadow-md' 
-                : 'hover:bg-muted hover:shadow-sm border'
-            }`}
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-lg shadow-sm" style={{ backgroundColor: p.color }} />
-              <div className="text-foreground font-medium">{p.label}</div>
-            </div>
-          </button>
-        ))}
+    <div className="w-80 bg-card rounded-xl border shadow-sm p-6">
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-foreground mb-2">Fases CBL</h3>
+        <div className="text-sm text-muted-foreground">
+          Complete cada fase sequencialmente
+        </div>
       </div>
-    </aside>
+
+      <div className="space-y-3">
+        {phases.map((p) => {
+          const isAccessible = canAccessPhase(p.id, project);
+          const isCompleted = (() => {
+            switch (p.id) {
+              case 'engage':
+                return !!(project.bigIdea && project.essentialQuestion);
+              case 'investigate':
+                return !!(
+                  project.bigIdea && 
+                  project.essentialQuestion && 
+                  project.guidingQuestions.length > 0 &&
+                  project.guidingActivities.length > 0 &&
+                  project.researchSynthesis
+                );
+              case 'act':
+                return !!(
+                  project.bigIdea && 
+                  project.essentialQuestion && 
+                  project.guidingQuestions.length > 0 &&
+                  project.guidingActivities.length > 0 &&
+                  project.researchSynthesis &&
+                  project.solutionDevelopment &&
+                  project.implementationPlan.length > 0
+                );
+              default:
+                return false;
+            }
+          })();
+
+          return (
+            <button
+              key={p.id}
+              onClick={() => isAccessible ? setPhase(p.id) : null}
+              disabled={!isAccessible}
+              className={`w-full p-4 rounded-lg border-2 text-left transition-all duration-200 ${
+                !isAccessible
+                  ? 'border-border bg-muted text-muted-foreground cursor-not-allowed opacity-60'
+                  : phase === p.id
+                  ? 'border-primary bg-primary/10 shadow-sm hover:shadow-md'
+                  : 'border-border bg-background hover:border-primary/50 hover:shadow-md'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-2xl">{p.icon}</span>
+                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                  isCompleted
+                    ? 'bg-green-500 border-green-500 text-white'
+                    : phase === p.id && isAccessible
+                    ? 'bg-primary border-primary text-primary-foreground'
+                    : 'border-border'
+                }`}>
+                  {isCompleted && <span className="text-xs">✓</span>}
+                  {!isCompleted && phase === p.id && isAccessible && <span className="text-xs">●</span>}
+                  {!isCompleted && !isAccessible && <span className="text-xs">🔒</span>}
+                </div>
+              </div>
+              <div className="font-semibold mb-1">{p.name}</div>
+              <div className="text-xs">{p.description}</div>
+              {!isAccessible && (
+                <div className="text-xs mt-1 text-orange-500">
+                  Complete a fase anterior primeiro
+                </div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 };
 

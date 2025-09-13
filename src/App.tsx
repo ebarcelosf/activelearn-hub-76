@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ProjectProvider } from "@/contexts/ProjectContext";
 import { Login } from "@/pages/Login";
 import { Dashboard } from "@/pages/Dashboard";
+import { CBLProjectView } from "@/pages/CBLProjectView";
 import { MainLayout } from "@/components/layout/MainLayout";
 import NotFound from "./pages/NotFound";
 
@@ -36,6 +37,14 @@ const AppRoutes = () => {
         <ProtectedRoute>
           <MainLayout>
             <Dashboard />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/project/:projectId/:phase" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <CBLProjectView />
           </MainLayout>
         </ProtectedRoute>
       } />

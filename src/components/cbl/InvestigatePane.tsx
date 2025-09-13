@@ -110,7 +110,8 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
     if (!canComplete) {
       return alert(`Investigate requer pelo menos 3 perguntas respondidas (${answeredCount}/3) e 1 atividade concluída (${completedActivities}/${activities.length}).`);
     }
-    update('completed', true);
+    update('investigateCompleted', true);
+    update('phase', 'act');
     // Mark all checklist items as done
     const completedChecklist = (data.checklist || []).map((item: any) => ({ ...item, done: true }));
     update('checklist', completedChecklist);
@@ -322,11 +323,11 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
             {canComplete ? '✅ Marcar Investigate como concluído' : '⏳ Complete 3 perguntas e 1 atividade'}
           </button>
           <div className={`px-3 py-2 rounded-lg text-sm font-medium ${
-            data.completed
+            data.investigateCompleted
               ? 'bg-green-500 text-white'
               : 'bg-yellow-500 text-white'
           }`}>
-            {data.completed ? '✅ Concluído' : `⏳ ${sectionsCompleted}/4 seções • ${answeredCount}/3 respostas • ${completedActivities}/${activities.length} atividades`}
+            {data.investigateCompleted ? '✅ Concluído' : `⏳ ${sectionsCompleted}/4 seções • ${answeredCount}/3 respostas • ${completedActivities}/${activities.length} atividades`}
           </div>
         </div>
       </div>

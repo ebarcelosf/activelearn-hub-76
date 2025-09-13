@@ -33,23 +33,37 @@ export interface Project {
   updatedAt: Date;
   phase: 'engage' | 'investigate' | 'act';
   progress: number;
+
+  // Completion flags
+  engageCompleted?: boolean;
+  investigateCompleted?: boolean;
+  actCompleted?: boolean;
   
   // Engage Phase
   bigIdea?: string;
   essentialQuestion?: string;
-  challenges: string[];
-  engageChecklist: ChecklistItem[];
+  challenge?: string; // UI single challenge text
+  challenges: string[]; // legacy array
+  engageChecklist: ChecklistItem[]; // legacy checklist
+  checklist?: UIChecklistItem[]; // UI checklist
   
   // Investigate Phase
-  guidingQuestions: GuidingQuestion[];
-  guidingActivities: Activity[];
-  guidingResources: Resource[];
-  researchSynthesis?: string;
+  guidingQuestions: GuidingQuestion[]; // legacy typed questions
+  answers?: { q: string; a: string }[]; // UI answers
+  activities?: Activity[]; // UI alias for guidingActivities
+  resources?: Resource[]; // UI alias for guidingResources
+  guidingActivities: Activity[]; // legacy
+  guidingResources: Resource[]; // legacy
+  researchSynthesis?: string; // legacy
+  synthesis?: { mainFindings?: string }; // UI synthesis
   
   // Act Phase
-  solutionDevelopment?: string;
-  implementationPlan: ImplementationStep[];
-  evaluationCriteria: EvaluationMetric[];
+  solutionDevelopment?: string; // legacy
+  solution?: { description?: string }; // UI solution
+  implementationPlan: ImplementationStep[]; // legacy
+  implementation?: { overview?: string }; // UI implementation
+  evaluationCriteria: EvaluationMetric[]; // legacy
+  evaluation?: { objectives?: string }; // UI evaluation
   prototypes: Prototype[];
 }
 

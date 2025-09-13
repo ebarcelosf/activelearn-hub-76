@@ -11,25 +11,16 @@ interface PhaseSidebarProps {
 
 // Função para verificar se uma fase pode ser acessada
 const canAccessPhase = (phase: string, project: any): boolean => {
+  const answeredCount = (project.answers || []).filter((a: any) => a && a.a && a.a.trim().length > 0).length;
+  const completedActivities = (project.activities || []).filter((a: any) => a.status === 'completed').length;
+  const hasSynthesis = !!(project.synthesis?.mainFindings || project.researchSynthesis);
   switch (phase) {
     case 'engage':
       return true; // Sempre pode acessar a primeira fase
-    
     case 'investigate':
-      // Só pode acessar se Engage estiver concluído
-      return !!(project.bigIdea && project.essentialQuestion);
-    
+      return !!(project.engageCompleted || (project.bigIdea && project.essentialQuestion));
     case 'act':
-      // Só pode acessar se Investigate estiver concluído
-      const investigateComplete = !!(
-        project.bigIdea && 
-        project.essentialQuestion && 
-        project.guidingQuestions.length > 0 &&
-        project.guidingActivities.length > 0 &&
-        project.researchSynthesis
-      );
-      return investigateComplete;
-    
+      return !!(project.investigateCompleted || (answeredCount >= 3 && completedActivities >= 1 && hasSynthesis));
     default:
       return false;
   }
@@ -58,26 +49,21 @@ export const PhaseSidebar: React.FC<PhaseSidebarProps> = ({ phase, setPhase, pro
             switch (p.id) {
               case 'engage':
                 return !!(project.bigIdea && project.essentialQuestion);
-              case 'investigate':
-                return !!(
-                  project.bigIdea && 
-                  project.essentialQuestion && 
-                  project.guidingQuestions.length > 0 &&
-                  project.guidingActivities.length > 0 &&
-                  project.researchSynthesis
-                );
-              case 'act':
-                return !!(
-                  project.bigIdea && 
-                  project.essentialQuestion && 
-                  project.guidingQuestions.length > 0 &&
-                  project.guidingActivities.length > 0 &&
-                  project.researchSynthesis &&
-                  project.solutionDevelopment &&
-                  project.implementationPlan.length > 0
-                );
+              case 'investigate': {
+                const answeredCount = (project.answers || []).filter((a: any) => a && a.a && a.a.trim().length > 0).length;
+                const completedActivities = (project.activities || []).filter((a: any) => a.status === 'completed').length;
+                const hasSynthesis = !!(project.synthesis?.mainFindings || project.researchSynthesis);
+                return !!(project.investigateCompleted || (answeredCount >= 3 && completedActivities >= 1 && hasSynthesis));
+              }
+              case 'act': {
+                const hasSolution = !!(project.solution?.description || project.solutionDevelopment);
+                const hasImplementation = !!(project.implementation?.overview || (project.implementationPlan && project.implementationPlan.length > 0));
+                const hasEvaluation = !!(project.evaluation?.objectives || (project.evaluationCriteria && project.evaluationCriteria.length > 0));
+                const hasPrototypes = (project.prototypes && project.prototypes.length > 0) || false;
+                return !!(project.actCompleted || (hasSolution && hasImplementation && hasEvaluation && hasPrototypes));
+              }
               default:
-                return false;
+                return !!(project.engageCompleted || (project.bigIdea && project.essentialQuestion));
             }
           })();
 

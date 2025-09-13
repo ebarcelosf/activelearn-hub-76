@@ -38,7 +38,8 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
       return;
     }
     
-    update('completed', true);
+    update('engageCompleted', true);
+    update('phase', 'investigate');
     // Mark all checklist items as done
     const completedChecklist = (data.checklist || []).map((item: any) => ({ ...item, done: true }));
     update('checklist', completedChecklist);
@@ -244,11 +245,11 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
             {canComplete ? '✅ Marcar Engage como concluído' : '⏳ Complete Big Idea e Essential Question'}
           </button>
           <div className={`px-3 py-2 rounded-lg text-sm font-medium ${
-            data.completed
+            data.engageCompleted
               ? 'bg-green-500 text-white'
               : 'bg-yellow-500 text-white'
           }`}>
-            {data.completed ? '✅ Concluído' : `⏳ ${sectionsCompleted}/3 seções`}
+            {data.engageCompleted ? '✅ Concluído' : `⏳ ${sectionsCompleted}/3 seções`}
           </div>
         </div>
       </div>

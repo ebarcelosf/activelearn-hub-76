@@ -80,7 +80,7 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
     if (!hasImplementationPlan) return alert('É necessário definir um plano de implementação.');
     if (!hasEvaluationCriteria) return alert('É necessário estabelecer critérios de avaliação.');
 
-    update('completed', true);
+    update('actCompleted', true);
     // Mark all checklist items as done
     const completedChecklist = (data.checklist || []).map((item: any) => ({ ...item, done: true }));
     update('checklist', completedChecklist);
@@ -226,11 +226,11 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
             {sectionsCompleted >= 4 ? '✅ Marcar Act como concluído' : '⏳ Complete todas as seções para finalizar'}
           </button>
           <div className={`px-3 py-2 rounded-lg text-sm font-medium ${
-            data.completed 
+            data.actCompleted 
               ? 'bg-green-500 text-white' 
               : 'bg-yellow-500 text-white'
           }`}>
-            {data.completed ? '✅ Concluído' : `⏳ ${sectionsCompleted}/4 seções`}
+            {data.actCompleted ? '✅ Concluído' : `⏳ ${sectionsCompleted}/4 seções`}
           </div>
         </div>
       </div>

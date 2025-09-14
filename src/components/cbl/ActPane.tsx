@@ -5,6 +5,10 @@ import { EvaluationManager } from '@/components/shared/EvaluationManager';
 import { PrototypeManager } from '@/components/shared/PrototypeManager';
 import { ChecklistEditor } from '@/components/shared/ChecklistEditor';
 import { useBadgeContext } from '@/contexts/BadgeContext';
+import { useNudges } from '@/hooks/useNudges';
+import { NudgeModal } from '@/components/shared/NudgeModal';
+import { Button } from '@/components/ui/button';
+import { Lightbulb } from 'lucide-react';
 
 interface ActPaneProps {
   data: any;
@@ -14,6 +18,7 @@ interface ActPaneProps {
 export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
   const [activeSection, setActiveSection] = useState('solution-development');
   const { checkTrigger } = useBadgeContext();
+  const { isModalOpen, currentNudges, currentCategory, currentPhase, openNudgeModal, refreshNudges, closeModal } = useNudges();
 
   // Atualizar dados da solução
   function updateSolution(field: string, value: any) {

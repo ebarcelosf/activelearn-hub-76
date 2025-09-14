@@ -3,6 +3,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ChecklistEditor } from '@/components/shared/ChecklistEditor';
 import { useBadgeContext } from '@/contexts/BadgeContext';
+import { useNudges } from '@/hooks/useNudges';
+import { NudgeModal } from '@/components/shared/NudgeModal';
+import { Button } from '@/components/ui/button';
+import { Lightbulb } from 'lucide-react';
 
 interface EngagePaneProps {
   data: any;
@@ -12,6 +16,7 @@ interface EngagePaneProps {
 export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
   const [activeSection, setActiveSection] = useState('big-ideas');
   const { checkTrigger } = useBadgeContext();
+  const { isModalOpen, currentNudges, currentCategory, currentPhase, openNudgeModal, refreshNudges, closeModal } = useNudges();
 
   const setField = (field: string, value: string) => {
     update(field, value);
@@ -162,6 +167,15 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
                 <div className="font-semibold text-lg text-foreground">Essential Questions</div>
                 <div className="text-muted-foreground text-sm mt-1">Transforme a Big Idea em uma pergunta orientadora clara</div>
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openNudgeModal('Engage', 'Essential Question')}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Lightbulb className="h-3 w-3" />
+                Obter Nudges
+              </Button>
             </div>
             <div className="mt-4">
               <label className="block text-sm font-medium text-muted-foreground mb-2">
@@ -205,6 +219,15 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
                 <div className="font-semibold text-lg text-foreground">Challenges</div>
                 <div className="text-muted-foreground text-sm mt-1">Liste desafios específicos que seu projeto deverá solucionar</div>
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openNudgeModal('Engage', 'Challenges')}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Lightbulb className="h-3 w-3" />
+                Obter Nudges
+              </Button>
             </div>
             <div className="mt-4">
               <label className="block text-sm font-medium text-muted-foreground mb-2">
@@ -267,6 +290,16 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+      
+      <NudgeModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        nudges={currentNudges}
+        category={currentCategory}
+        phase={currentPhase}
+        onRefresh={refreshNudges}
+      />
+    </>
   );
 };

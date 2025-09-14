@@ -5,6 +5,10 @@ import { ResourceManager } from '@/components/shared/ResourceManager';
 import { SynthesisManager } from '@/components/shared/SynthesisManager';
 import { ChecklistEditor } from '@/components/shared/ChecklistEditor';
 import { useBadgeContext } from '@/contexts/BadgeContext';
+import { useNudges } from '@/hooks/useNudges';
+import { NudgeModal } from '@/components/shared/NudgeModal';
+import { Button } from '@/components/ui/button';
+import { Lightbulb } from 'lucide-react';
 
 interface InvestigatePaneProps {
   data: any;
@@ -14,6 +18,7 @@ interface InvestigatePaneProps {
 export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }) => {
   const [activeSection, setActiveSection] = useState('guiding-questions');
   const { checkTrigger } = useBadgeContext();
+  const { isModalOpen, currentNudges, currentCategory, currentPhase, openNudgeModal, refreshNudges, closeModal } = useNudges();
 
   function setAnswer(idx: number, text: string) {
     const answers = [...(data.answers || [])];

@@ -7,9 +7,11 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ProjectProvider } from "@/contexts/ProjectContext";
+import { BadgeProvider } from "@/contexts/BadgeContext";
 import { Login } from "@/pages/Login";
 import { Dashboard } from "@/pages/Dashboard";
 import { CBLProjectView } from "@/pages/CBLProjectView";
+import { Achievements } from "@/pages/Achievements";
 import { MainLayout } from "@/components/layout/MainLayout";
 import NotFound from "./pages/NotFound";
 
@@ -50,6 +52,14 @@ const AppRoutes = () => {
         </ProtectedRoute>
       } />
       
+      <Route path="/achievements" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <Achievements />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>
@@ -61,13 +71,15 @@ const App = () => (
     <ThemeProvider defaultTheme="dark">
       <AuthProvider>
         <ProjectProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <AppRoutes />
-            </BrowserRouter>
-          </TooltipProvider>
+          <BadgeProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <AppRoutes />
+              </BrowserRouter>
+            </TooltipProvider>
+          </BadgeProvider>
         </ProjectProvider>
       </AuthProvider>
     </ThemeProvider>

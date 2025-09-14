@@ -23,6 +23,7 @@ export interface Badge {
   icon: string;
   earnedAt: Date;
   category: 'engage' | 'investigate' | 'act' | 'milestone';
+  xp: number;
 }
 
 export interface Project {

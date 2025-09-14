@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ChecklistEditor } from '@/components/shared/ChecklistEditor';
+import { useBadgeContext } from '@/contexts/BadgeContext';
 
 interface EngagePaneProps {
   data: any;
@@ -10,9 +11,19 @@ interface EngagePaneProps {
 
 export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
   const [activeSection, setActiveSection] = useState('big-ideas');
+  const { checkTrigger } = useBadgeContext();
 
   const setField = (field: string, value: string) => {
     update(field, value);
+    
+    // Trigger badges baseado no campo
+    if (field === 'bigIdea' && value.trim().length > 0) {
+      checkTrigger('big_idea_created');
+    } else if (field === 'essentialQuestion' && value.trim().length > 0) {
+      checkTrigger('essential_question_created');
+    } else if (field === 'challenge' && value.trim().length > 0) {
+      checkTrigger('challenge_defined');
+    }
   };
 
   function addChecklist(text: string) {
@@ -43,6 +54,9 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
     // Mark all checklist items as done
     const completedChecklist = (data.engageChecklistItems || []).map((item: any) => ({ ...item, done: true }));
     update('engageChecklistItems', completedChecklist);
+    
+    // Trigger badge de conclusão da fase Engage
+    checkTrigger('engage_completed');
   }
 
   // Verificar conclusão das seções

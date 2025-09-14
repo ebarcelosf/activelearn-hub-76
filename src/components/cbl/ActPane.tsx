@@ -4,6 +4,7 @@ import { ImplementationManager } from '@/components/shared/ImplementationManager
 import { EvaluationManager } from '@/components/shared/EvaluationManager';
 import { PrototypeManager } from '@/components/shared/PrototypeManager';
 import { ChecklistEditor } from '@/components/shared/ChecklistEditor';
+import { useBadgeContext } from '@/contexts/BadgeContext';
 
 interface ActPaneProps {
   data: any;
@@ -12,6 +13,7 @@ interface ActPaneProps {
 
 export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
   const [activeSection, setActiveSection] = useState('solution-development');
+  const { checkTrigger } = useBadgeContext();
 
   // Atualizar dados da solução
   function updateSolution(field: string, value: any) {
@@ -35,6 +37,13 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
   function addPrototype(prototype: any) {
     const prototypes = [...(data.prototypes || []), prototype];
     update('prototypes', prototypes);
+    
+    // Trigger badges de protótipos
+    if (prototypes.length === 1) {
+      checkTrigger('prototype_created');
+    } else if (prototypes.length === 3) {
+      checkTrigger('multiple_prototypes_created', { prototypesCount: prototypes.length });
+    }
   }
 
   // Atualizar protótipo
@@ -81,9 +90,18 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
     if (!hasEvaluationCriteria) return alert('É necessário estabelecer critérios de avaliação.');
 
     update('actCompleted', true);
+    
+    // Trigger badges de conclusão
+    checkTrigger('act_completed');
+    
+    // Verificar se completou todo o ciclo CBL
+    if (data.engageCompleted && data.investigateCompleted) {
+      checkTrigger('cbl_cycle_completed');
+    }
+    
     // Mark all checklist items as done
-    const completedChecklist = (data.checklist || []).map((item: any) => ({ ...item, done: true }));
-    update('checklist', completedChecklist);
+    const completedChecklist = (data.actChecklistItems || []).map((item: any) => ({ ...item, done: true }));
+    update('actChecklistItems', completedChecklist);
   }
 
   // Verificar conclusão das seções

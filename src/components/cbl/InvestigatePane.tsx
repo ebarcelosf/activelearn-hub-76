@@ -4,6 +4,7 @@ import { ActivityManager } from '@/components/shared/ActivityManager';
 import { ResourceManager } from '@/components/shared/ResourceManager';
 import { SynthesisManager } from '@/components/shared/SynthesisManager';
 import { ChecklistEditor } from '@/components/shared/ChecklistEditor';
+import { useBadgeContext } from '@/contexts/BadgeContext';
 
 interface InvestigatePaneProps {
   data: any;
@@ -12,11 +13,22 @@ interface InvestigatePaneProps {
 
 export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }) => {
   const [activeSection, setActiveSection] = useState('guiding-questions');
+  const { checkTrigger } = useBadgeContext();
 
   function setAnswer(idx: number, text: string) {
     const answers = [...(data.answers || [])];
     answers[idx] = { q: data.guidingQuestions[idx], a: text };
     update('answers', answers);
+
+    // Verificar badges de perguntas respondidas
+    const answeredCount = answers.filter(a => a && a.a && a.a.trim().length > 0).length;
+    if (answeredCount === 1) {
+      checkTrigger('first_question_answered');
+    } else if (answeredCount === 3) {
+      checkTrigger('questions_answered_3', { questionsAnswered: answeredCount });
+    } else if (answeredCount === 5) {
+      checkTrigger('questions_answered_5', { questionsAnswered: answeredCount });
+    }
   }
 
   function addGuidingQuestion(text: string) {
@@ -36,6 +48,11 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
   function addActivity(newActivity: any) {
     const activities = [...(data.activities || []), newActivity];
     update('activities', activities);
+    
+    // Trigger badge de primeira atividade
+    if (activities.length === 1) {
+      checkTrigger('activity_created');
+    }
   }
 
   function updateActivity(id: string, updatedData: any) {
@@ -110,7 +127,7 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
     if (!canComplete) {
       return alert(`Investigate requer pelo menos 3 perguntas respondidas (${answeredCount}/3) e 1 atividade concluída (${completedActivities}/${activities.length}).`);
     }
-    update('investigateCompleted', true);
+    checkTrigger('investigate_completed');
     update('phase', 'act');
     // Mark all checklist items as done
     const completedChecklist = (data.checklist || []).map((item: any) => ({ ...item, done: true }));

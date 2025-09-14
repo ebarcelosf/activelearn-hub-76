@@ -53,19 +53,19 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
 
   function addChecklist(text: string) {
     const newItem = { id: Date.now(), text, done: false };
-    update('checklist', [...(data.checklist || []), newItem]);
+    update('actChecklistItems', [...(data.actChecklistItems || []), newItem]);
   }
 
   function toggleChecklist(id: number) {
-    const checklist = (data.checklist || []).map((item: any) => 
+    const checklist = (data.actChecklistItems || []).map((item: any) => 
       item.id === id ? { ...item, done: !item.done } : item
     );
-    update('checklist', checklist);
+    update('actChecklistItems', checklist);
   }
 
   function removeChecklistItem(id: number) {
-    const checklist = (data.checklist || []).filter((item: any) => item.id !== id);
-    update('checklist', checklist);
+    const checklist = (data.actChecklistItems || []).filter((item: any) => item.id !== id);
+    update('actChecklistItems', checklist);
   }
 
   function markComplete() {
@@ -204,7 +204,7 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
           </div>
           <div className="mt-4">
             <ChecklistEditor 
-              items={data.checklist || []} 
+              items={data.actChecklistItems || []} 
               onAdd={addChecklist} 
               onToggle={toggleChecklist}
               onRemove={removeChecklistItem}

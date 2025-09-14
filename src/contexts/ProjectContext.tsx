@@ -94,49 +94,17 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const getProjectProgress = (project: Project): number => {
-    let totalTasks = 0;
-    let completedTasks = 0;
-
-    // Engage phase progress
-    if (project.bigIdea) completedTasks++;
-    totalTasks++;
+    let completedPhases = 0;
     
-    if (project.essentialQuestion) completedTasks++;
-    totalTasks++;
+    if (project.engageCompleted) completedPhases++;
+    if (project.investigateCompleted) completedPhases++;
+    if (project.actCompleted) completedPhases++;
     
-    if (project.challenges.length > 0) completedTasks++;
-    totalTasks++;
-
-    completedTasks += project.engageChecklist.filter(item => item.completed).length;
-    totalTasks += project.engageChecklist.length || 1;
-
-    // Investigate phase progress
-    completedTasks += project.guidingQuestions.filter(q => q.answer).length;
-    totalTasks += project.guidingQuestions.length || 1;
-
-    completedTasks += project.guidingActivities.filter(a => a.status === 'completed').length;
-    totalTasks += project.guidingActivities.length || 1;
-
-    if (project.guidingResources.length > 0) completedTasks++;
-    totalTasks++;
-
-    if (project.researchSynthesis) completedTasks++;
-    totalTasks++;
-
-    // Act phase progress
-    if (project.solutionDevelopment) completedTasks++;
-    totalTasks++;
-
-    completedTasks += project.implementationPlan.filter(step => step.status === 'completed').length;
-    totalTasks += project.implementationPlan.length || 1;
-
-    if (project.evaluationCriteria.length > 0) completedTasks++;
-    totalTasks++;
-
-    if (project.prototypes.length > 0) completedTasks++;
-    totalTasks++;
-
-    return Math.round((completedTasks / totalTasks) * 100);
+    // 33% para cada fase (com a última sendo 34% para somar 100%)
+    if (completedPhases === 0) return 0;
+    if (completedPhases === 1) return 33;
+    if (completedPhases === 2) return 66;
+    return 100;
   };
 
   return (

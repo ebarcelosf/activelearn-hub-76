@@ -45,7 +45,7 @@ export interface Project {
   challenge?: string; // UI single challenge text
   challenges: string[]; // legacy array
   engageChecklist: ChecklistItem[]; // legacy checklist
-  checklist?: UIChecklistItem[]; // UI checklist
+  engageChecklistItems?: ChecklistItem[]; // UI checklist específica do Engage
   
   // Investigate Phase
   guidingQuestions: GuidingQuestion[]; // legacy typed questions
@@ -56,6 +56,7 @@ export interface Project {
   guidingResources: Resource[]; // legacy
   researchSynthesis?: string; // legacy
   synthesis?: { mainFindings?: string }; // UI synthesis
+  investigateChecklistItems?: ChecklistItem[]; // UI checklist específica do Investigate
   
   // Act Phase
   solutionDevelopment?: string; // legacy
@@ -65,6 +66,7 @@ export interface Project {
   evaluationCriteria: EvaluationMetric[]; // legacy
   evaluation?: { objectives?: string }; // UI evaluation
   prototypes: Prototype[];
+  actChecklistItems?: ChecklistItem[]; // UI checklist específica do Act
 }
 
 export interface ChecklistItem {

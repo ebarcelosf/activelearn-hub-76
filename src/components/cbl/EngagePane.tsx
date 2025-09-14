@@ -17,19 +17,19 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
 
   function addChecklist(text: string) {
     const newItem = { id: Date.now(), text, done: false };
-    update('checklist', [...(data.checklist || []), newItem]);
+    update('engageChecklistItems', [...(data.engageChecklistItems || []), newItem]);
   }
 
   function toggleChecklist(id: number) {
-    const updatedChecklist = (data.checklist || []).map((item: any) => 
+    const updatedChecklist = (data.engageChecklistItems || []).map((item: any) => 
       item.id === id ? { ...item, done: !item.done } : item
     );
-    update('checklist', updatedChecklist);
+    update('engageChecklistItems', updatedChecklist);
   }
 
   function removeChecklist(id: number) {
-    const updatedChecklist = (data.checklist || []).filter((item: any) => item.id !== id);
-    update('checklist', updatedChecklist);
+    const updatedChecklist = (data.engageChecklistItems || []).filter((item: any) => item.id !== id);
+    update('engageChecklistItems', updatedChecklist);
   }
 
   function markComplete() {
@@ -41,8 +41,8 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
     update('engageCompleted', true);
     update('phase', 'investigate');
     // Mark all checklist items as done
-    const completedChecklist = (data.checklist || []).map((item: any) => ({ ...item, done: true }));
-    update('checklist', completedChecklist);
+    const completedChecklist = (data.engageChecklistItems || []).map((item: any) => ({ ...item, done: true }));
+    update('engageChecklistItems', completedChecklist);
   }
 
   // Verificar conclusão das seções
@@ -223,7 +223,7 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
           </div>
           <div className="mt-4">
             <ChecklistEditor 
-              items={data.checklist || []} 
+              items={data.engageChecklistItems || []} 
               onAdd={addChecklist} 
               onToggle={toggleChecklist} 
               onRemove={removeChecklist} 

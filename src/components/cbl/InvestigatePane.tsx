@@ -91,19 +91,19 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
 
   function addChecklist(text: string) {
     const newItem = { id: Date.now(), text, done: false };
-    update('checklist', [...(data.checklist || []), newItem]);
+    update('investigateChecklistItems', [...(data.investigateChecklistItems || []), newItem]);
   }
 
   function toggleChecklist(id: number) {
-    const checklist = (data.checklist || []).map((item: any) => 
+    const checklist = (data.investigateChecklistItems || []).map((item: any) => 
       item.id === id ? { ...item, done: !item.done } : item
     );
-    update('checklist', checklist);
+    update('investigateChecklistItems', checklist);
   }
 
   function removeChecklistItem(id: number) {
-    const checklist = (data.checklist || []).filter((item: any) => item.id !== id);
-    update('checklist', checklist);
+    const checklist = (data.investigateChecklistItems || []).filter((item: any) => item.id !== id);
+    update('investigateChecklistItems', checklist);
   }
 
   function markComplete() {
@@ -301,7 +301,7 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
           </div>
           <div className="mt-4">
             <ChecklistEditor
-              items={data.checklist || []}
+              items={data.investigateChecklistItems || []}
               onAdd={addChecklist}
               onToggle={toggleChecklist}
               onRemove={removeChecklistItem}

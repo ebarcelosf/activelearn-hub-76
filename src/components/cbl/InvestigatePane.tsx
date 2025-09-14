@@ -6,6 +6,7 @@ import { SynthesisManager } from '@/components/shared/SynthesisManager';
 import { ChecklistEditor } from '@/components/shared/ChecklistEditor';
 import { useBadgeContext } from '@/contexts/BadgeContext';
 import { useNudges } from '@/hooks/useNudges';
+import { NudgeModal } from '@/components/shared/NudgeModal';
 import { Button } from '@/components/ui/button';
 import { Lightbulb } from 'lucide-react';
 
@@ -17,7 +18,7 @@ interface InvestigatePaneProps {
 export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }) => {
   const [activeSection, setActiveSection] = useState('guiding-questions');
   const { checkTrigger } = useBadgeContext();
-  const { openNudgeModal } = useNudges();
+  const { isModalOpen, currentNudges, currentCategory, currentPhase, openNudgeModal, refreshNudges, closeModal } = useNudges();
 
   function setAnswer(idx: number, text: string) {
     const answers = [...(data.answers || [])];
@@ -231,6 +232,15 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
                 <div className="font-semibold text-lg text-foreground">Guiding Questions</div>
                 <div className="text-muted-foreground text-sm mt-1">Perguntas-guia para orientar sua pesquisa</div>
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openNudgeModal('Investigate', 'Guiding Questions')}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Lightbulb className="h-3 w-3" />
+                Obter Nudges
+              </Button>
             </div>
             
             <div className="mt-4">
@@ -352,6 +362,15 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
           </div>
         </div>
       </div>
+      
+      <NudgeModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        nudges={currentNudges}
+        category={currentCategory}
+        phase={currentPhase}
+        onRefresh={refreshNudges}
+      />
     </div>
   );
 };

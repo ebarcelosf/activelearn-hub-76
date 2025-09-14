@@ -1,4 +1,4 @@
-// hooks/useNudges.ts - Versão simplificada
+// hooks/useNudges.ts
 import { useState, useCallback } from 'react';
 import { NudgeItem, getRandomNudges } from '@/utils/nudgeConstants';
 import { useBadgeContext } from '@/contexts/BadgeContext';
@@ -13,7 +13,10 @@ export function useNudges() {
   const { checkTrigger } = useBadgeContext();
 
   const openNudgeModal = useCallback((phase: Phase, category: string, count: number = 3) => {
+    console.log('Opening nudge modal for:', phase, category);
     const nudges = getRandomNudges(phase, category, count);
+    console.log('Retrieved nudges:', nudges);
+    
     if (nudges.length > 0) {
       setCurrentNudges(nudges);
       setCurrentCategory(category);
@@ -22,13 +25,14 @@ export function useNudges() {
       
       // Trigger badge de nudge obtido
       checkTrigger('nudge_obtained');
-      
-      // Alert temporário até o modal estar funcionando
-      alert(`Nudge para ${category} em ${phase}: ${nudges[0].title}\n\n${nudges[0].detail}`);
+    } else {
+      console.warn('No nudges found for:', phase, category);
+      alert(`Nenhum nudge encontrado para ${category} na fase ${phase}`);
     }
   }, [checkTrigger]);
 
   const refreshNudges = useCallback(() => {
+    console.log('Refreshing nudges for:', currentPhase, currentCategory);
     const nudges = getRandomNudges(currentPhase, currentCategory, 3);
     setCurrentNudges(nudges);
   }, [currentPhase, currentCategory]);

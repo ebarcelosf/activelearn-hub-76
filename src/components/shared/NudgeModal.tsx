@@ -26,6 +26,8 @@ export const NudgeModal: React.FC<NudgeModalProps> = ({
 }) => {
   const [selectedNudgeIndex, setSelectedNudgeIndex] = useState(0);
 
+  console.log('NudgeModal rendered with:', { isOpen, nudges, category, phase });
+  
   const selectedNudge = nudges[selectedNudgeIndex];
 
   const handleNext = () => {
@@ -36,7 +38,10 @@ export const NudgeModal: React.FC<NudgeModalProps> = ({
     setSelectedNudgeIndex((prev) => (prev - 1 + nudges.length) % nudges.length);
   };
 
-  if (!selectedNudge) return null;
+  if (!selectedNudge) {
+    console.warn('No selected nudge available');
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

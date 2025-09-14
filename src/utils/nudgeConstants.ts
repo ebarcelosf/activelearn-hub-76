@@ -648,12 +648,30 @@ export const getNudgesByPhase = (phase: keyof NudgePhases): NudgeCategory => {
 
 // Função helper para obter nudges de uma categoria específica
 export const getNudgesByCategory = (phase: keyof NudgePhases, category: string): NudgeItem[] => {
-  return NUDGE_CATEGORIES[phase]?.[category] || [];
+  console.log(`Getting nudges for phase: ${phase}, category: ${category}`);
+  console.log('Available phases:', Object.keys(NUDGE_CATEGORIES));
+  
+  const phaseData = NUDGE_CATEGORIES[phase];
+  if (!phaseData) {
+    console.warn(`Phase ${phase} not found in NUDGE_CATEGORIES`);
+    return [];
+  }
+  
+  console.log('Available categories for phase:', Object.keys(phaseData));
+  const categoryData = phaseData[category];
+  if (!categoryData) {
+    console.warn(`Category ${category} not found in phase ${phase}`);
+    return [];
+  }
+  
+  console.log(`Found ${categoryData.length} nudges for ${phase} - ${category}`);
+  return categoryData;
 };
 
 // Função helper para obter um nudge aleatório de uma categoria
 export const getRandomNudge = (phase: keyof NudgePhases, category: string): NudgeItem | null => {
   const nudges = getNudgesByCategory(phase, category);
+  console.log(`Getting random nudge for ${phase} - ${category}:`, nudges);
   if (nudges.length === 0) return null;
   
   const randomIndex = Math.floor(Math.random() * nudges.length);
@@ -663,6 +681,7 @@ export const getRandomNudge = (phase: keyof NudgePhases, category: string): Nudg
 // Função helper para obter múltiplos nudges aleatórios
 export const getRandomNudges = (phase: keyof NudgePhases, category: string, count: number = 3): NudgeItem[] => {
   const nudges = getNudgesByCategory(phase, category);
+  console.log(`Getting ${count} random nudges for ${phase} - ${category}:`, nudges);
   if (nudges.length === 0) return [];
   
   const shuffled = [...nudges].sort(() => 0.5 - Math.random());

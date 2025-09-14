@@ -4,7 +4,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { ChecklistEditor } from '@/components/shared/ChecklistEditor';
 import { useBadgeContext } from '@/contexts/BadgeContext';
 import { useNudges } from '@/hooks/useNudges';
-import { NudgeModal } from '@/components/shared/NudgeModal';
 import { Button } from '@/components/ui/button';
 import { Lightbulb } from 'lucide-react';
 
@@ -16,7 +15,7 @@ interface EngagePaneProps {
 export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
   const [activeSection, setActiveSection] = useState('big-ideas');
   const { checkTrigger } = useBadgeContext();
-  const { isModalOpen, currentNudges, currentCategory, currentPhase, openNudgeModal, refreshNudges, closeModal } = useNudges();
+  const { openNudgeModal } = useNudges();
 
   const setField = (field: string, value: string) => {
     update(field, value);
@@ -290,16 +289,6 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
           </div>
         </div>
       </div>
-      </div>
-      
-      <NudgeModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        nudges={currentNudges}
-        category={currentCategory}
-        phase={currentPhase}
-        onRefresh={refreshNudges}
-      />
-    </>
+    </div>
   );
 };

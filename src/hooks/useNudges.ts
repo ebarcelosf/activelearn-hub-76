@@ -1,6 +1,6 @@
-// hooks/useNudges.ts
+// hooks/useNudges.ts - Versão simplificada
 import { useState, useCallback } from 'react';
-import { NudgeItem, getRandomNudges, getNudgesByCategory } from '@/utils/nudgeConstants';
+import { NudgeItem, getRandomNudges } from '@/utils/nudgeConstants';
 import { useBadgeContext } from '@/contexts/BadgeContext';
 
 type Phase = 'Engage' | 'Investigate' | 'Act';
@@ -22,6 +22,9 @@ export function useNudges() {
       
       // Trigger badge de nudge obtido
       checkTrigger('nudge_obtained');
+      
+      // Alert temporário até o modal estar funcionando
+      alert(`Nudge para ${category} em ${phase}: ${nudges[0].title}\n\n${nudges[0].detail}`);
     }
   }, [checkTrigger]);
 

@@ -80,9 +80,9 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="dark">
       <SettingsProvider>
-        <AuthProvider>
-          <ProjectProvider>
-            <BadgeProvider>
+        <BadgeProvider>
+          <AuthProvider>
+            <ProjectProvider>
               <TooltipProvider>
                 <Toaster />
                 <Sonner />
@@ -90,9 +90,9 @@ const App = () => (
                   <AppRoutes />
                 </BrowserRouter>
               </TooltipProvider>
-            </BadgeProvider>
-          </ProjectProvider>
-        </AuthProvider>
+            </ProjectProvider>
+          </AuthProvider>
+        </BadgeProvider>
       </SettingsProvider>
     </ThemeProvider>
   </QueryClientProvider>

@@ -14,6 +14,11 @@ export const useBadgeContext = () => {
   return context;
 };
 
+// Safe optional access (returns undefined instead of throwing)
+export const useBadgeContextOptional = () => {
+  return useContext(BadgeContext);
+};
+
 interface BadgeProviderProps {
   children: ReactNode;
 }

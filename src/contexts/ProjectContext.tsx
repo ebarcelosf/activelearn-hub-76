@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Project } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { v4 as uuidv4 } from 'uuid';
-import { useBadgeContext } from './BadgeContext';
+import { useBadgeContextOptional } from './BadgeContext';
 
 interface ProjectContextType {
   projects: Project[];
@@ -28,7 +28,7 @@ export const useProjects = () => {
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [projects, setProjects] = useLocalStorage<Project[]>('activelearn_projects', []);
   const [currentProject, setCurrentProject] = React.useState<Project | null>(null);
-  const { checkProjectBadges, checkTrigger } = useBadgeContext();
+  const badge = useBadgeContextOptional();
 
   const createProject = (title: string, description: string): Project => {
     const newProject: Project = {
@@ -70,7 +70,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         };
         const trigger = phaseTriggerMap[newProject.phase as 'engage' | 'investigate' | 'act'];
         if (trigger) {
-          checkTrigger(trigger);
+          badge?.checkTrigger(trigger);
         }
       }
       
@@ -87,7 +87,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
 
       // Verificar badges com o estado mais recente do projeto
-      checkProjectBadges(newProject);
+      badge?.checkProjectBadges(newProject);
     }
   };
 

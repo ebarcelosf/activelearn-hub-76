@@ -8,6 +8,7 @@ interface AuthContextType {
   register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
+  deleteAccount: () => void;
   isLoading: boolean;
 }
 
@@ -84,6 +85,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const deleteAccount = () => {
+    setUser(null);
+    // Clear all local storage data related to the user
+    localStorage.removeItem('activelearn_user');
+    localStorage.removeItem('activelearn_projects');
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -91,6 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       register,
       logout,
       updateUser,
+      deleteAccount,
       isLoading
     }}>
       {children}

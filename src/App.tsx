@@ -12,6 +12,7 @@ import { Login } from "@/pages/Login";
 import { Dashboard } from "@/pages/Dashboard";
 import { CBLProjectView } from "@/pages/CBLProjectView";
 import { Achievements } from "@/pages/Achievements";
+import { Settings } from "@/pages/Settings";
 import { MainLayout } from "@/components/layout/MainLayout";
 import NotFound from "./pages/NotFound";
 
@@ -56,6 +57,14 @@ const AppRoutes = () => {
         <ProtectedRoute>
           <MainLayout>
             <Achievements />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/settings" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <Settings />
           </MainLayout>
         </ProtectedRoute>
       } />

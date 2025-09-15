@@ -103,27 +103,6 @@ export const NudgeModal: React.FC<NudgeModalProps> = ({
             </Button>
           </div>
 
-          {/* Lista de todos os nudges */}
-          <div className="space-y-2">
-            <h4 className="text-sm font-medium text-muted-foreground">
-              Outros nudges disponíveis:
-            </h4>
-            <div className="grid gap-2 max-h-32 overflow-y-auto">
-              {nudges.map((nudge, index) => (
-                <button
-                  key={nudge.id}
-                  onClick={() => setSelectedNudgeIndex(index)}
-                  className={`text-left p-2 rounded-md text-sm transition-colors ${
-                    index === selectedNudgeIndex 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
-                  }`}
-                >
-                  {nudge.title}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </DialogContent>
     </Dialog>

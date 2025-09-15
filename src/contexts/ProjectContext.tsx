@@ -28,7 +28,7 @@ export const useProjects = () => {
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [projects, setProjects] = useLocalStorage<Project[]>('activelearn_projects', []);
   const [currentProject, setCurrentProject] = React.useState<Project | null>(null);
-  const { checkProjectBadges } = useBadgeContext();
+  const { checkProjectBadges, checkTrigger } = useBadgeContext();
 
   const createProject = (title: string, description: string): Project => {
     const newProject: Project = {
@@ -60,6 +60,19 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const updatedProject = projects.find(p => p.id === projectId);
     if (updatedProject) {
       const newProject = { ...updatedProject, ...updates, updatedAt: new Date() };
+
+      // Disparar gatilhos de fase imediatamente quando a fase mudar
+      if (updatedProject.phase !== newProject.phase && newProject.phase) {
+        const phaseTriggerMap: Record<'engage' | 'investigate' | 'act', string> = {
+          engage: 'engage_started',
+          investigate: 'investigate_started',
+          act: 'act_started',
+        };
+        const trigger = phaseTriggerMap[newProject.phase as 'engage' | 'investigate' | 'act'];
+        if (trigger) {
+          checkTrigger(trigger);
+        }
+      }
       
       setProjects(prev => 
         prev.map(project => 
@@ -73,7 +86,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setCurrentProject(newProject);
       }
 
-      // Check for new badges after project update
+      // Verificar badges com o estado mais recente do projeto
       checkProjectBadges(newProject);
     }
   };

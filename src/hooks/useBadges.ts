@@ -126,7 +126,13 @@ export function useBadges() {
     }
 
     // Investigate badges
-    const questionsCount = project.guidingQuestions ? project.guidingQuestions.length : 0;
+    const questionsCount = (project as any).investigate?.guidingQuestions
+      ? (project as any).investigate.guidingQuestions.length
+      : Array.isArray((project as any).guidingQuestions)
+        ? (project as any).guidingQuestions.length
+        : Array.isArray((project as any).questions)
+          ? (project as any).questions.length
+          : 0;
     
     if (questionsCount > 0 && canEarnBadge('investigador_iniciante')) {
       grantBadge('investigador_iniciante');
@@ -141,7 +147,13 @@ export function useBadges() {
     }
 
     // Resources badges
-    const resourcesCount = project.guidingResources ? project.guidingResources.length : 0;
+    const resourcesCount = (project as any).investigate?.resources
+      ? (project as any).investigate.resources.length
+      : Array.isArray((project as any).guidingResources)
+        ? (project as any).guidingResources.length
+        : Array.isArray((project as any).resources)
+          ? (project as any).resources.length
+          : 0;
     
     if (resourcesCount > 0 && canEarnBadge('coletor')) {
       grantBadge('coletor');
@@ -152,7 +164,13 @@ export function useBadges() {
     }
 
     // Activities badge
-    const activitiesCount = project.guidingActivities ? project.guidingActivities.length : 0;
+    const activitiesCount = (project as any).investigate?.activities
+      ? (project as any).investigate.activities.length
+      : Array.isArray((project as any).guidingActivities)
+        ? (project as any).guidingActivities.length
+        : Array.isArray((project as any).activities)
+          ? (project as any).activities.length
+          : 0;
     
     if (activitiesCount > 0 && canEarnBadge('planejador')) {
       grantBadge('planejador');
@@ -169,9 +187,10 @@ export function useBadges() {
       grantBadge('inovador');
     }
 
-    // Act completed badge
-    if (project.solutionDevelopment && project.implementationPlan && 
-        project.implementationPlan.length > 0 && canEarnBadge('implementador')) {
+    // Act completed badge (considerando estruturas novas e antigas)
+    const hasSolution = !!(((project as any).solutionDevelopment && (project as any).solutionDevelopment.trim()) || (project as any).solution?.description);
+    const hasImplementation = !!((((project as any).implementationPlan && (project as any).implementationPlan.length > 0)) || (project as any).implementation?.overview);
+    if (hasSolution && hasImplementation && prototypesCount > 0 && canEarnBadge('implementador')) {
       grantBadge('implementador');
     }
 
@@ -187,8 +206,32 @@ export function useBadges() {
 
   // Função para verificar triggers específicos
   const checkTrigger = useCallback((trigger: string, data: BadgeTriggerData = {}) => {
-    if (trigger === 'nudge_obtained' && canEarnBadge('inspirado')) {
-      grantBadge('inspirado');
+    switch (trigger) {
+      case 'nudge_obtained':
+        if (canEarnBadge('inspirado')) grantBadge('inspirado');
+        break;
+      case 'investigate_started':
+        // Ao iniciar a fase Investigate, conceder badge introdutório
+        if (canEarnBadge('investigador_iniciante')) grantBadge('investigador_iniciante');
+        break;
+      case 'engage_completed':
+        // Conceder badge "Visionário" quando Engage completo (também coberto por checkProjectBadges)
+        if (canEarnBadge('visionario')) grantBadge('visionario');
+        break;
+      case 'investigate_completed':
+        // Progrediu bem na investigação; conceder "pesquisador" se tiver 3+ respostas
+        if (data.questionsAnswered && data.questionsAnswered >= 3 && canEarnBadge('pesquisador')) {
+          grantBadge('pesquisador');
+        }
+        break;
+      case 'act_completed':
+        if (canEarnBadge('implementador')) grantBadge('implementador');
+        break;
+      case 'cbl_cycle_completed':
+        if (canEarnBadge('mestre_cbl')) grantBadge('mestre_cbl');
+        break;
+      default:
+        break;
     }
   }, [canEarnBadge, grantBadge]);
 

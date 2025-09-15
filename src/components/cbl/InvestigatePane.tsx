@@ -134,11 +134,13 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
     if (!canComplete) {
       return alert(`Investigate requer pelo menos 3 perguntas respondidas (${answeredCount}/3) e 1 atividade concluída (${completedActivities}/${activities.length}).`);
     }
-    checkTrigger('investigate_completed');
+    // Marcar fase como concluída e avançar de fase
+    update('investigateCompleted', true);
+    checkTrigger('investigate_completed', { questionsAnswered: answeredCount });
     update('phase', 'act');
-    // Mark all checklist items as done
-    const completedChecklist = (data.checklist || []).map((item: any) => ({ ...item, done: true }));
-    update('checklist', completedChecklist);
+    // Marcar todos os itens da checklist da fase como concluídos
+    const completedChecklist = (data.investigateChecklistItems || []).map((item: any) => ({ ...item, done: true }));
+    update('investigateChecklistItems', completedChecklist);
   }
 
   // Verificar conclusão das seções

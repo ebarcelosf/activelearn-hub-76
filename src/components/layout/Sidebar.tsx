@@ -25,7 +25,7 @@ interface SidebarProps {
 
 const SidebarInner: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
-  const { currentProject, getProjectProgress } = useProjects();
+  const { currentProject, getProjectProgress, updateProject } = useProjects();
   
   const currentPath = location.pathname;
   const progress = currentProject ? getProjectProgress(currentProject) : 0;
@@ -41,6 +41,7 @@ const SidebarInner: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       icon: Lightbulb, 
       label: 'Engage', 
       path: `/project/${currentProject.id}/engage`,
+      phase: 'engage' as const,
       description: 'Definir problema e desafios',
       status: currentProject.bigIdea && currentProject.essentialQuestion ? 'completed' : 
               currentProject.bigIdea || currentProject.essentialQuestion ? 'progress' : 'pending'
@@ -49,6 +50,7 @@ const SidebarInner: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       icon: Search, 
       label: 'Investigate', 
       path: `/project/${currentProject.id}/investigate`,
+      phase: 'investigate' as const,
       description: 'Pesquisar e analisar',
       status: currentProject.researchSynthesis ? 'completed' :
               currentProject.guidingQuestions.length > 0 || currentProject.guidingActivities.length > 0 ? 'progress' : 'pending'
@@ -57,6 +59,7 @@ const SidebarInner: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       icon: Rocket, 
       label: 'Act', 
       path: `/project/${currentProject.id}/act`,
+      phase: 'act' as const,
       description: 'Desenvolver e implementar',
       status: currentProject.solutionDevelopment && currentProject.prototypes.length > 0 ? 'completed' :
               currentProject.solutionDevelopment || currentProject.implementationPlan.length > 0 ? 'progress' : 'pending'
@@ -155,7 +158,12 @@ const SidebarInner: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                         <NavLink
                           key={item.path}
                           to={item.path}
-                          onClick={onClose}
+                          onClick={() => {
+                            if (currentProject) {
+                              updateProject(currentProject.id, { phase: item.phase });
+                            }
+                            onClose();
+                          }}
                           className={({ isActive }) =>
                             cn(
                               "flex items-center gap-3 rounded-lg p-3 text-sm transition-colors group",

@@ -18,7 +18,7 @@ export interface BadgeDefinition {
   title: string;
   desc: string;
   xp: number;
-  icon: string;
+  icon: string; // Lucide icon name instead of emoji
   category: BadgeCategory;
   trigger: string;
   rarity: BadgeRarity;
@@ -31,7 +31,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     title: 'Visionário', 
     desc: 'Completou a fase Engage do CBL', 
     xp: 100, 
-    icon: '🌟', 
+    icon: 'Star', 
     category: BADGE_CATEGORIES.FASES_CBL,
     trigger: 'engage_completed',
     rarity: 'common'
@@ -41,7 +41,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     title: 'Investigador', 
     desc: 'Iniciou a fase Investigate', 
     xp: 40, 
-    icon: '🔍', 
+    icon: 'Search', 
     category: BADGE_CATEGORIES.FASES_CBL,
     trigger: 'investigate_started',
     rarity: 'common'
@@ -51,7 +51,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     title: 'Implementador', 
     desc: 'Completou a fase Act do CBL', 
     xp: 140, 
-    icon: '⚡', 
+    icon: 'Zap', 
     category: BADGE_CATEGORIES.FASES_CBL,
     trigger: 'act_completed',
     rarity: 'common'
@@ -63,7 +63,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     title: 'Primeiro Passo', 
     desc: 'Escreveu sua Big Idea', 
     xp: 40, 
-    icon: '🎯', 
+    icon: 'Target', 
     category: BADGE_CATEGORIES.ENGAJAMENTO,
     trigger: 'big_idea_created',
     rarity: 'common'
@@ -73,7 +73,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     title: 'Questionador', 
     desc: 'Criou sua Essential Question', 
     xp: 35, 
-    icon: '❓', 
+    icon: 'HelpCircle', 
     category: BADGE_CATEGORIES.ENGAJAMENTO,
     trigger: 'essential_question_created',
     rarity: 'common'
@@ -83,7 +83,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     title: 'Desafiador', 
     desc: 'Definiu seu Challenge', 
     xp: 40, 
-    icon: '⚡', 
+    icon: 'Flag', 
     category: BADGE_CATEGORIES.ENGAJAMENTO,
     trigger: 'challenge_defined',
     rarity: 'common'
@@ -95,7 +95,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     title: 'Pesquisador', 
     desc: 'Respondeu 3 perguntas-guia', 
     xp: 60, 
-    icon: '📚', 
+    icon: 'BookOpen', 
     category: BADGE_CATEGORIES.INVESTIGACAO,
     trigger: 'questions_answered_3',
     rarity: 'common'
@@ -105,7 +105,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     title: 'Analista', 
     desc: 'Respondeu 5 perguntas-guia', 
     xp: 70, 
-    icon: '🧠', 
+    icon: 'Brain', 
     category: BADGE_CATEGORIES.INVESTIGACAO,
     trigger: 'questions_answered_5',
     rarity: 'uncommon'
@@ -115,7 +115,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     title: 'Coletor', 
     desc: 'Adicionou recursos de pesquisa', 
     xp: 30, 
-    icon: '📖', 
+    icon: 'Bookmark', 
     category: BADGE_CATEGORIES.INVESTIGACAO,
     trigger: 'resources_added',
     rarity: 'common'
@@ -125,7 +125,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     title: 'Bibliotecário', 
     desc: 'Coletou 3 recursos de pesquisa', 
     xp: 50, 
-    icon: '📚', 
+    icon: 'Library', 
     category: BADGE_CATEGORIES.INVESTIGACAO,
     trigger: 'multiple_resources_collected',
     rarity: 'uncommon'
@@ -137,7 +137,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     title: 'Planejador', 
     desc: 'Criou sua primeira atividade', 
     xp: 45, 
-    icon: '📋', 
+    icon: 'ClipboardList', 
     category: BADGE_CATEGORIES.ENGAJAMENTO,
     trigger: 'activity_created',
     rarity: 'common'
@@ -147,7 +147,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     title: 'Criador', 
     desc: 'Criou seu primeiro protótipo', 
     xp: 80, 
-    icon: '🛠️', 
+    icon: 'Wrench', 
     category: BADGE_CATEGORIES.CRIATIVIDADE,
     trigger: 'prototype_created',
     rarity: 'uncommon'
@@ -157,7 +157,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     title: 'Inovador', 
     desc: 'Criou 3+ protótipos', 
     xp: 90, 
-    icon: '🚀', 
+    icon: 'Rocket', 
     category: BADGE_CATEGORIES.CRIATIVIDADE,
     trigger: 'multiple_prototypes_created',
     rarity: 'uncommon'
@@ -169,7 +169,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     title: 'Inspirado', 
     desc: 'Obteve um nudge para inspiração', 
     xp: 30, 
-    icon: '💡', 
+    icon: 'Lightbulb', 
     category: BADGE_CATEGORIES.ESPECIAL,
     trigger: 'nudge_obtained',
     rarity: 'common'
@@ -181,7 +181,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     title: 'Mestre CBL', 
     desc: 'Completou todo o ciclo CBL', 
     xp: 150, 
-    icon: '🏆', 
+    icon: 'Trophy', 
     category: BADGE_CATEGORIES.MAESTRIA,
     trigger: 'cbl_cycle_completed',
     rarity: 'legendary'

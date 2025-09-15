@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/components/ui/theme-provider';
+import { useSettings } from '@/contexts/SettingsContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +15,7 @@ import { User, Settings as SettingsIcon, Moon, Sun, Monitor, Trash2 } from 'luci
 export const Settings: React.FC = () => {
   const { user, updateUser, deleteAccount } = useAuth();
   const { theme, setTheme } = useTheme();
+  const { settings, updateSettings } = useSettings();
   
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -233,8 +235,8 @@ export const Settings: React.FC = () => {
               </div>
               <Switch
                 id="notifications"
-                checked={user.settings.notifications}
-                onCheckedChange={handleNotificationToggle}
+                checked={settings.showBadgeNotifications}
+                onCheckedChange={(checked) => updateSettings({ showBadgeNotifications: checked })}
               />
             </div>
           </CardContent>

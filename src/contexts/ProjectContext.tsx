@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Project } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { v4 as uuidv4 } from 'uuid';
+import { useBadgeContext } from './BadgeContext';
 
 interface ProjectContextType {
   projects: Project[];
@@ -27,6 +28,7 @@ export const useProjects = () => {
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [projects, setProjects] = useLocalStorage<Project[]>('activelearn_projects', []);
   const [currentProject, setCurrentProject] = React.useState<Project | null>(null);
+  const { checkProjectBadges } = useBadgeContext();
 
   const createProject = (title: string, description: string): Project => {
     const newProject: Project = {
@@ -55,16 +57,24 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const updateProject = (projectId: string, updates: Partial<Project>) => {
-    setProjects(prev => 
-      prev.map(project => 
-        project.id === projectId 
-          ? { ...project, ...updates, updatedAt: new Date() }
-          : project
-      )
-    );
+    const updatedProject = projects.find(p => p.id === projectId);
+    if (updatedProject) {
+      const newProject = { ...updatedProject, ...updates, updatedAt: new Date() };
+      
+      setProjects(prev => 
+        prev.map(project => 
+          project.id === projectId 
+            ? newProject
+            : project
+        )
+      );
 
-    if (currentProject?.id === projectId) {
-      setCurrentProject(prev => prev ? { ...prev, ...updates, updatedAt: new Date() } : null);
+      if (currentProject?.id === projectId) {
+        setCurrentProject(newProject);
+      }
+
+      // Check for new badges after project update
+      checkProjectBadges(newProject);
     }
   };
 
@@ -94,17 +104,56 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const getProjectProgress = (project: Project): number => {
-    let completedPhases = 0;
+    const sections = [
+      'bigIdea',
+      'essentialQuestion', 
+      'challenge',
+      'guidingQuestions',
+      'guidingActivities',
+      'guidingResources',
+      'researchSynthesis',
+      'solutionDevelopment',
+      'implementationPlan',
+      'evaluationCriteria',
+      'prototypes'
+    ];
     
-    if (project.engageCompleted) completedPhases++;
-    if (project.investigateCompleted) completedPhases++;
-    if (project.actCompleted) completedPhases++;
+    let completedSections = 0;
     
-    // 33% para cada fase (com a última sendo 34% para somar 100%)
-    if (completedPhases === 0) return 0;
-    if (completedPhases === 1) return 33;
-    if (completedPhases === 2) return 66;
-    return 100;
+    // Check bigIdea
+    if (project.bigIdea && project.bigIdea.trim()) completedSections++;
+    
+    // Check essentialQuestion
+    if (project.essentialQuestion && project.essentialQuestion.trim()) completedSections++;
+    
+    // Check challenge
+    if ((project.challenge && project.challenge.trim()) || (project.challenges && project.challenges.length > 0)) completedSections++;
+    
+    // Check guidingQuestions
+    if (project.guidingQuestions && project.guidingQuestions.length > 0) completedSections++;
+    
+    // Check guidingActivities
+    if (project.guidingActivities && project.guidingActivities.length > 0) completedSections++;
+    
+    // Check guidingResources
+    if (project.guidingResources && project.guidingResources.length > 0) completedSections++;
+    
+    // Check researchSynthesis
+    if (project.researchSynthesis && project.researchSynthesis.trim()) completedSections++;
+    
+    // Check solutionDevelopment
+    if (project.solutionDevelopment && project.solutionDevelopment.trim()) completedSections++;
+    
+    // Check implementationPlan
+    if (project.implementationPlan && project.implementationPlan.length > 0) completedSections++;
+    
+    // Check evaluationCriteria
+    if (project.evaluationCriteria && project.evaluationCriteria.length > 0) completedSections++;
+    
+    // Check prototypes
+    if (project.prototypes && project.prototypes.length > 0) completedSections++;
+    
+    return Math.round((completedSections / sections.length) * 100);
   };
 
   return (

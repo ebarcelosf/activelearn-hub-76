@@ -4,6 +4,8 @@ import { Badge } from '@/types';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
+import { LucideIcon } from './LucideIcon';
+import { icons } from 'lucide-react';
 
 interface BadgeNotificationProps {
   badge: Badge;
@@ -18,8 +20,12 @@ export const BadgeNotification: React.FC<BadgeNotificationProps> = ({ badge, sho
     <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right duration-300">
       <Card className="p-4 shadow-lg border-l-4 border-l-primary max-w-sm">
         <div className="flex items-start gap-3">
-          <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold shadow-md">
-            {badge.icon || '🏅'}
+          <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md">
+            {badge.icon && badge.icon in icons ? (
+              <LucideIcon name={badge.icon as keyof typeof icons} size={24} />
+            ) : (
+              <LucideIcon name="Award" size={24} />
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-1">

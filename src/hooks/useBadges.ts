@@ -1,6 +1,6 @@
 // hooks/useBadges.ts
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import { Badge } from '@/types';
+import { Badge, Project } from '@/types';
 import { BadgeDefinition, BADGE_LIST, getBadgeById } from '@/utils/badgeConstants';
 
 interface BadgeProgress {
@@ -99,53 +99,97 @@ export function useBadges() {
     };
   }, [canEarnBadge]);
 
+  // Função para verificar badges baseado no projeto atual
+  const checkProjectBadges = useCallback((project: Project) => {
+    if (!project) return;
+
+    // Big Idea badge
+    if (project.bigIdea && project.bigIdea.trim() && canEarnBadge('primeiro_passo')) {
+      grantBadge('primeiro_passo');
+    }
+
+    // Essential Question badge
+    if (project.essentialQuestion && project.essentialQuestion.trim() && canEarnBadge('questionador')) {
+      grantBadge('questionador');
+    }
+
+    // Challenge badge
+    if (((project.challenge && project.challenge.trim()) || (project.challenges && project.challenges.length > 0)) && canEarnBadge('desafiador')) {
+      grantBadge('desafiador');
+    }
+
+    // Engage completed badge
+    if (project.bigIdea && project.essentialQuestion && 
+        ((project.challenge && project.challenge.trim()) || (project.challenges && project.challenges.length > 0)) &&
+        canEarnBadge('visionario')) {
+      grantBadge('visionario');
+    }
+
+    // Investigate badges
+    const questionsCount = project.guidingQuestions ? project.guidingQuestions.length : 0;
+    
+    if (questionsCount > 0 && canEarnBadge('investigador_iniciante')) {
+      grantBadge('investigador_iniciante');
+    }
+    
+    if (questionsCount >= 3 && canEarnBadge('pesquisador')) {
+      grantBadge('pesquisador');
+    }
+    
+    if (questionsCount >= 5 && canEarnBadge('analista')) {
+      grantBadge('analista');
+    }
+
+    // Resources badges
+    const resourcesCount = project.guidingResources ? project.guidingResources.length : 0;
+    
+    if (resourcesCount > 0 && canEarnBadge('coletor')) {
+      grantBadge('coletor');
+    }
+    
+    if (resourcesCount >= 3 && canEarnBadge('bibliotecario')) {
+      grantBadge('bibliotecario');
+    }
+
+    // Activities badge
+    const activitiesCount = project.guidingActivities ? project.guidingActivities.length : 0;
+    
+    if (activitiesCount > 0 && canEarnBadge('planejador')) {
+      grantBadge('planejador');
+    }
+
+    // Prototypes badges
+    const prototypesCount = project.prototypes ? project.prototypes.length : 0;
+    
+    if (prototypesCount > 0 && canEarnBadge('criador')) {
+      grantBadge('criador');
+    }
+    
+    if (prototypesCount >= 3 && canEarnBadge('inovador')) {
+      grantBadge('inovador');
+    }
+
+    // Act completed badge
+    if (project.solutionDevelopment && project.implementationPlan && 
+        project.implementationPlan.length > 0 && canEarnBadge('implementador')) {
+      grantBadge('implementador');
+    }
+
+    // Master CBL badge
+    if (project.bigIdea && project.essentialQuestion && 
+        ((project.challenge && project.challenge.trim()) || (project.challenges && project.challenges.length > 0)) &&
+        questionsCount >= 3 && resourcesCount >= 1 && activitiesCount >= 1 &&
+        project.solutionDevelopment && project.implementationPlan && 
+        project.implementationPlan.length > 0 && canEarnBadge('mestre_cbl')) {
+      grantBadge('mestre_cbl');
+    }
+  }, [canEarnBadge, grantBadge]);
+
   // Função para verificar triggers específicos
   const checkTrigger = useCallback((trigger: string, data: BadgeTriggerData = {}) => {
-    const badgesToCheck: { [key: string]: () => boolean } = {
-      'big_idea_created': () => canEarnBadge('primeiro_passo'),
-      'essential_question_created': () => canEarnBadge('questionador'),
-      'challenge_defined': () => canEarnBadge('desafiador'),
-      'engage_completed': () => canEarnBadge('visionario'),
-      'investigate_started': () => canEarnBadge('investigador_iniciante'),
-      'first_question_answered': () => canEarnBadge('investigador_iniciante'),
-      'questions_answered_3': () => canEarnBadge('pesquisador') && (data.questionsAnswered || 0) >= 3,
-      'questions_answered_5': () => canEarnBadge('analista') && (data.questionsAnswered || 0) >= 5,
-      'resources_added': () => canEarnBadge('coletor'),
-      'multiple_resources_collected': () => canEarnBadge('bibliotecario') && (data.resourcesCount || 0) >= 3,
-      'activity_created': () => canEarnBadge('planejador'),
-      'prototype_created': () => canEarnBadge('criador'),
-      'multiple_prototypes_created': () => canEarnBadge('inovador') && (data.prototypesCount || 0) >= 3,
-      'act_completed': () => canEarnBadge('implementador'),
-      'nudge_obtained': () => canEarnBadge('inspirado'),
-      'cbl_cycle_completed': () => canEarnBadge('mestre_cbl')
-    };
-
-    Object.entries(badgesToCheck).forEach(([triggerName, shouldGrant]) => {
-      if (trigger === triggerName && shouldGrant()) {
-        const badgeId = {
-          'big_idea_created': 'primeiro_passo',
-          'essential_question_created': 'questionador',
-          'challenge_defined': 'desafiador',
-          'engage_completed': 'visionario',
-          'investigate_started': 'investigador_iniciante',
-          'first_question_answered': 'investigador_iniciante',
-          'questions_answered_3': 'pesquisador',
-          'questions_answered_5': 'analista',
-          'resources_added': 'coletor',
-          'multiple_resources_collected': 'bibliotecario',
-          'activity_created': 'planejador',
-          'prototype_created': 'criador',
-          'multiple_prototypes_created': 'inovador',
-          'act_completed': 'implementador',
-          'nudge_obtained': 'inspirado',
-          'cbl_cycle_completed': 'mestre_cbl'
-        }[triggerName];
-
-        if (badgeId) {
-          grantBadge(badgeId);
-        }
-      }
-    });
+    if (trigger === 'nudge_obtained' && canEarnBadge('inspirado')) {
+      grantBadge('inspirado');
+    }
   }, [canEarnBadge, grantBadge]);
 
   // Função para fechar notificação
@@ -222,6 +266,7 @@ export function useBadges() {
     // Funções principais
     grantBadge,
     checkTrigger,
+    checkProjectBadges,
     canEarnBadge,
     getBadgeProgress,
     dismissNotification,

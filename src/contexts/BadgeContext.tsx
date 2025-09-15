@@ -2,6 +2,7 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useBadges } from '@/hooks/useBadges';
 import { BadgeNotification } from '@/components/shared/BadgeNotification';
+import { useSettings } from './SettingsContext';
 
 const BadgeContext = createContext<ReturnType<typeof useBadges> | undefined>(undefined);
 
@@ -19,11 +20,12 @@ interface BadgeProviderProps {
 
 export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
   const badgeState = useBadges();
+  const { settings } = useSettings();
 
   return (
     <BadgeContext.Provider value={badgeState}>
       {children}
-      {badgeState.recentBadge && (
+      {badgeState.recentBadge && settings.showBadgeNotifications && (
         <BadgeNotification
           badge={badgeState.recentBadge}
           show={badgeState.showNotification}

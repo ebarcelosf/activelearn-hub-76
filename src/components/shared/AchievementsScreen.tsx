@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge as BadgeComponent } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { LucideIcon } from './LucideIcon';
+import { icons } from 'lucide-react';
 
 interface StatsCardProps {
   icon: string;
@@ -102,10 +104,14 @@ function BadgeItem({ badge, earned = true }: BadgeItemProps) {
         ? 'hover:shadow-md border-border' 
         : 'opacity-60 border-dashed'
     }`}>
-      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg ${
+      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg ${
         earned ? getBadgeColor(badge.id) : 'bg-muted-foreground'
       }`}>
-        {badge.icon || '🏅'}
+        {badge.icon && badge.icon in icons ? (
+          <LucideIcon name={badge.icon as keyof typeof icons} size={24} />
+        ) : (
+          <LucideIcon name="Award" size={24} />
+        )}
       </div>
       <div className="flex-1">
         <div className="flex items-center gap-2 mb-1">

@@ -1,6 +1,5 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { PhaseSidebar } from './CBLHelpers';
 import { EngagePane } from './EngagePane';
 import { InvestigatePane } from './InvestigatePane';
 import { ActPane } from './ActPane';
@@ -29,19 +28,13 @@ export const CBLScreen: React.FC = () => {
     updateProject(currentProject.id, { [field]: value });
   };
 
-  const handlePhaseChange = (newPhase: string) => {
+  const handlePhaseTransition = (newPhase: string) => {
     navigate(`/project/${currentProject.id}/${newPhase}`);
   };
 
   return (
-    <div className="flex gap-6 p-6">
-      <PhaseSidebar 
-        phase={currentPhase} 
-        setPhase={handlePhaseChange} 
-        project={currentProject} 
-      />
-      
-      <div className="flex-1 bg-card rounded-xl shadow-sm border">
+    <div className="p-6">
+      <div className="bg-card rounded-xl shadow-sm border">
         <main className="p-6">
           <div className="border-b border-border pb-4">
             <div>
@@ -58,6 +51,7 @@ export const CBLScreen: React.FC = () => {
                 <EngagePane 
                   data={currentProject} 
                   update={handleUpdate}
+                  onPhaseTransition={handlePhaseTransition}
                 />
               )}
               {currentPhase === 'investigate' && (

@@ -11,9 +11,10 @@ import { Lightbulb } from 'lucide-react';
 interface EngagePaneProps {
   data: any;
   update: (field: string, value: any) => void;
+  onPhaseTransition?: (phase: string) => void;
 }
 
-export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
+export const EngagePane: React.FC<EngagePaneProps> = ({ data, update, onPhaseTransition }) => {
   const [activeSection, setActiveSection] = useState('big-ideas');
   const { checkTrigger } = useBadgeContext();
   const { isModalOpen, currentCategory, currentPhase, openNudgeModal, closeModal } = useNudges();
@@ -62,6 +63,11 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
     
     // Trigger badge de conclusão da fase Engage
     checkTrigger('engage_completed');
+    
+    // Transição automática para a próxima fase
+    if (onPhaseTransition) {
+      onPhaseTransition('investigate');
+    }
   }
 
   // Verificar conclusão das seções
@@ -136,6 +142,15 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
                 <div className="font-semibold text-lg text-foreground">Big Ideas</div>
                 <div className="text-muted-foreground text-sm mt-1">Escreva 1-2 frases que resumam o problema central</div>
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openNudgeModal('Engage', 'Big Idea')}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Lightbulb className="h-3 w-3" />
+                Obter Nudges
+              </Button>
             </div>
             <div className="mt-4">
               <label className="block text-sm font-medium text-muted-foreground mb-2">

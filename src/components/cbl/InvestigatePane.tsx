@@ -94,6 +94,11 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
   function addResource(newResource: any) {
     const resources = [...(data.resources || []), newResource];
     update('resources', resources);
+    // Badge triggers for resources
+    checkTrigger('resources_added', { resourcesCount: resources.length });
+    if (resources.length >= 3) {
+      checkTrigger('multiple_resources_collected', { resourcesCount: resources.length });
+    }
   }
 
   function updateResource(id: string, updatedData: any) {
@@ -132,7 +137,7 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
 
   function markComplete() {
     if (!canComplete) {
-      return alert(`Investigate requer pelo menos 3 perguntas respondidas (${answeredCount}/3) e 1 atividade concluída (${completedActivities}/${activities.length}).`);
+      return alert('Para concluir, adicione: 1 pergunta, 1 atividade, 1 recurso e escreva a síntese.');
     }
     // Marcar fase como concluída e avançar de fase
     update('investigateCompleted', true);
@@ -148,15 +153,15 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
   const resources = data.resources || [];
   const synthesis = data.synthesis || {};
   const answeredCount = (data.answers || []).filter((a: any) => a && a.a && a.a.trim().length > 0).length;
-  const completedActivities = activities.filter((act: any) => act.status === 'completed').length;
-  const canComplete = answeredCount >= 3 && completedActivities >= 1;
-
-  // Status das seções
-  const hasAnswers = answeredCount >= 3;
-  const hasActivities = completedActivities >= 1;
+  const questionsCount = (data.guidingQuestions || []).length;
+  
+  // Critérios de conclusão: 1 pergunta, 1 atividade, 1 recurso e síntese preenchida
+  const hasQuestion = questionsCount >= 1;
+  const hasActivities = activities.length >= 1;
   const hasResources = resources.length >= 1;
   const hasSynthesis = !!(synthesis.mainFindings || '').trim();
-  const sectionsCompleted = [hasAnswers, hasActivities, hasResources, hasSynthesis].filter(Boolean).length;
+  const sectionsCompleted = [hasQuestion, hasActivities, hasResources, hasSynthesis].filter(Boolean).length;
+  const canComplete = sectionsCompleted === 4;
 
   const sections = [
     {
@@ -164,8 +169,8 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
       title: 'Guiding Questions',
       icon: '❓',
       description: 'Perguntas-guia para orientar sua pesquisa',
-      completed: hasAnswers,
-      count: `${answeredCount}/${(data.guidingQuestions || []).length}`
+      completed: hasQuestion,
+      count: (questionsCount).toString()
     },
     {
       id: 'guiding-activities',
@@ -173,7 +178,7 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
       icon: '🎯',
       description: 'Atividades práticas para coletar dados',
       completed: hasActivities,
-      count: `${completedActivities}/${activities.length}`
+      count: activities.length.toString()
     },
     {
       id: 'guiding-resources',
@@ -412,12 +417,12 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
               <div className="space-y-2">
                 <h3 className="font-semibold">Concluir Fase Investigate</h3>
                 <p className="text-sm text-muted-foreground">
-                  Complete pelo menos 3 perguntas respondidas e 1 atividade para avançar
+                  Para avançar: adicione 1 pergunta, 1 atividade, 1 recurso e escreva a síntese
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
                 <Badge variant={data.investigateCompleted ? "default" : "secondary"}>
-                  {data.investigateCompleted ? '✅ Concluído' : `⏳ ${sectionsCompleted}/4 seções • ${answeredCount}/3 respostas • ${completedActivities}/${activities.length} atividades`}
+                  {data.investigateCompleted ? '✅ Concluído' : `⏳ ${sectionsCompleted}/4 seções (Perg., Ativ., Rec., Síntese)`}
                 </Badge>
                 <Button
                   onClick={markComplete}
@@ -425,7 +430,7 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
                   size="lg"
                   className={!canComplete ? "opacity-60" : ""}
                 >
-                  {canComplete ? '✅ Marcar Investigate como concluído' : '⏳ Complete 3 perguntas e 1 atividade'}
+                  {canComplete ? 'Concluir Fase e Avançar para Act' : '⏳ Requisitos pendentes'}
                 </Button>
               </div>
             </div>

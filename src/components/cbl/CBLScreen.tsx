@@ -16,6 +16,14 @@ export const CBLScreen: React.FC = () => {
   
   const currentPhase = phase || 'engage';
 
+  // Sincroniza a fase do projeto com a rota para garantir gatilhos ao navegar direto
+  React.useEffect(() => {
+    if (!currentProject) return;
+    if (currentProject.phase !== currentPhase) {
+      updateProject(currentProject.id, { phase: currentPhase as 'engage' | 'investigate' | 'act' });
+    }
+  }, [currentPhase, currentProject?.id]);
+
   if (!currentProject) {
     return (
       <div className="container mx-auto py-12">

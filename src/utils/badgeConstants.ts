@@ -36,7 +36,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     trigger: 'engage_completed',
     rarity: 'common'
   },
-  investigador: { 
+  investigador_iniciante: { 
     id: 'investigador_iniciante', 
     title: 'Investigador', 
     desc: 'Iniciou a fase Investigate', 

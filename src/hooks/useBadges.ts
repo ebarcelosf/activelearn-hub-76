@@ -195,7 +195,10 @@ export function useBadges() {
     }
 
     // Master CBL badge
-    if (project.bigIdea && project.essentialQuestion && 
+    const allPhasesCompleted = !!((project as any).engageCompleted && (project as any).investigateCompleted && (project as any).actCompleted);
+    if (allPhasesCompleted && canEarnBadge('mestre_cbl')) {
+      grantBadge('mestre_cbl');
+    } else if (project.bigIdea && project.essentialQuestion && 
         ((project.challenge && project.challenge.trim()) || (project.challenges && project.challenges.length > 0)) &&
         questionsCount >= 3 && resourcesCount >= 1 && activitiesCount >= 1 &&
         project.solutionDevelopment && project.implementationPlan && 
@@ -222,6 +225,16 @@ export function useBadges() {
         // Progrediu bem na investigação; conceder "pesquisador" se tiver 3+ respostas
         if (data.questionsAnswered && data.questionsAnswered >= 3 && canEarnBadge('pesquisador')) {
           grantBadge('pesquisador');
+        }
+        break;
+      case 'resources_added':
+        if ((data.resourcesCount ?? 0) >= 1 && canEarnBadge('coletor')) {
+          grantBadge('coletor');
+        }
+        break;
+      case 'multiple_resources_collected':
+        if ((data.resourcesCount ?? 0) >= 3 && canEarnBadge('bibliotecario')) {
+          grantBadge('bibliotecario');
         }
         break;
       case 'act_completed':

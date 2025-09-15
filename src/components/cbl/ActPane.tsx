@@ -3,11 +3,13 @@ import { SolutionManager } from '@/components/shared/SolutionManager';
 import { ImplementationManager } from '@/components/shared/ImplementationManager';
 import { EvaluationManager } from '@/components/shared/EvaluationManager';
 import { PrototypeManager } from '@/components/shared/PrototypeManager';
-import { ChecklistEditor } from '@/components/shared/ChecklistEditor';
+import { ChecklistEditorCard } from '@/components/shared/ChecklistEditorCard';
 import { useBadgeContext } from '@/contexts/BadgeContext';
 import { useNudges } from '@/hooks/useNudges';
 import { NudgeModal } from '@/components/shared/NudgeModal';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Lightbulb } from 'lucide-react';
 
 interface ActPaneProps {
@@ -148,34 +150,34 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
   ];
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-foreground">Act — Implementar e Testar</h3>
-
+    <div className="space-y-8">
       {/* Navegação das Seções */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {sections.map(section => (
-          <button
+          <Card 
             key={section.id}
-            onClick={() => setActiveSection(section.id)}
-            className={`p-4 rounded-xl border-2 text-left transition-all duration-200 hover:shadow-md ${
+            className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
               activeSection === section.id
-                ? 'border-accent bg-accent/10 shadow-sm'
-                : 'border-border bg-card hover:border-accent/50'
+                ? 'ring-2 ring-accent border-accent/50'
+                : ''
             }`}
+            onClick={() => setActiveSection(section.id)}
           >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-2xl">{section.icon}</span>
-              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                section.completed
-                  ? 'bg-green-500 border-green-500 text-white'
-                  : 'border-border'
-              }`}>
-                {section.completed && <span className="text-xs">✓</span>}
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-2xl">{section.icon}</div>
+                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                  section.completed
+                    ? 'bg-green-500 border-green-500 text-white'
+                    : 'border-border'
+                }`}>
+                  {section.completed && <span className="text-xs">✓</span>}
+                </div>
               </div>
-            </div>
-            <div className="font-semibold text-foreground mb-1">{section.title}</div>
-            <div className="text-xs text-muted-foreground">{section.description}</div>
-          </button>
+              <CardTitle className="text-sm mb-1">{section.title}</CardTitle>
+              <CardDescription className="text-xs">{section.description}</CardDescription>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
@@ -288,42 +290,41 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
         )}
 
         {/* Checklist Personalizada */}
-        <div className="bg-card p-6 rounded-xl border shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div className="font-medium text-lg text-foreground">Checklist Personalizada</div>
-            <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-lg">Customize suas tarefas</div>
-          </div>
-          <div className="mt-4">
-            <ChecklistEditor 
-              items={data.actChecklistItems || []} 
-              onAdd={addChecklist} 
-              onToggle={toggleChecklist}
-              onRemove={removeChecklistItem}
-            />
-          </div>
-        </div>
+        <ChecklistEditorCard
+          items={data.actChecklistItems || []} 
+          onAdd={addChecklist} 
+          onToggle={toggleChecklist}
+          onRemove={removeChecklistItem}
+          title="Checklist da Fase Act"
+          description="Adicione tarefas específicas para esta fase"
+        />
 
         {/* Botão de Conclusão */}
-        <div className="flex gap-3 items-center">
-          <button 
-            onClick={markComplete} 
-            disabled={sectionsCompleted < 4}
-            className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-              sectionsCompleted >= 4
-                ? 'bg-accent text-accent-foreground hover:bg-accent/90 hover:shadow-lg' 
-                : 'bg-muted text-muted-foreground cursor-not-allowed border border-border'
-            }`}
-          >
-            {sectionsCompleted >= 4 ? '✅ Marcar Act como concluído' : '⏳ Complete todas as seções para finalizar'}
-          </button>
-          <div className={`px-3 py-2 rounded-lg text-sm font-medium ${
-            data.actCompleted 
-              ? 'bg-green-500 text-white' 
-              : 'bg-yellow-500 text-white'
-          }`}>
-            {data.actCompleted ? '✅ Concluído' : `⏳ ${sectionsCompleted}/4 seções`}
-          </div>
-        </div>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              <div className="space-y-2">
+                <h3 className="font-semibold">Concluir Fase Act</h3>
+                <p className="text-sm text-muted-foreground">
+                  Complete todas as seções para finalizar o ciclo CBL
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                <Badge variant={data.actCompleted ? "default" : "secondary"}>
+                  {data.actCompleted ? '✅ Concluído' : `⏳ ${sectionsCompleted}/4 seções`}
+                </Badge>
+                <Button
+                  onClick={markComplete} 
+                  disabled={sectionsCompleted < 4}
+                  size="lg"
+                  className={sectionsCompleted < 4 ? "opacity-60" : ""}
+                >
+                  {sectionsCompleted >= 4 ? '✅ Marcar Act como concluído' : '⏳ Complete todas as seções para finalizar'}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
       
       <NudgeModal

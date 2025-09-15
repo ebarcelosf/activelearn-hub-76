@@ -4,9 +4,13 @@ import { EngagePane } from './EngagePane';
 import { InvestigatePane } from './InvestigatePane';
 import { ActPane } from './ActPane';
 import { useProjects } from '@/contexts/ProjectContext';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Lightbulb, Search, Rocket } from 'lucide-react';
 
 export const CBLScreen: React.FC = () => {
-  const { currentProject, updateProject } = useProjects();
+  const { currentProject, updateProject, getProjectProgress } = useProjects();
   const { phase } = useParams<{ phase: string }>();
   const navigate = useNavigate();
   
@@ -14,12 +18,16 @@ export const CBLScreen: React.FC = () => {
 
   if (!currentProject) {
     return (
-      <div className="flex items-center justify-center h-64 text-muted-foreground">
-        <div className="text-center">
-          <div className="text-4xl mb-4">📁</div>
-          <div className="text-lg font-medium">Nenhum projeto selecionado</div>
-          <div className="text-sm mt-2">Crie ou selecione um projeto para começar</div>
-        </div>
+      <div className="container mx-auto py-12">
+        <Card className="max-w-md mx-auto text-center">
+          <CardContent className="pt-6">
+            <div className="text-6xl mb-4">📁</div>
+            <CardTitle className="mb-2">Nenhum projeto selecionado</CardTitle>
+            <CardDescription>
+              Crie ou selecione um projeto para começar sua jornada CBL
+            </CardDescription>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -32,44 +40,98 @@ export const CBLScreen: React.FC = () => {
     navigate(`/project/${currentProject.id}/${newPhase}`);
   };
 
+  const progress = getProjectProgress(currentProject);
+  
+  const getPhaseIcon = (phase: string) => {
+    switch (phase) {
+      case 'engage': return Lightbulb;
+      case 'investigate': return Search;
+      case 'act': return Rocket;
+      default: return Lightbulb;
+    }
+  };
+
+  const getPhaseTitle = (phase: string) => {
+    switch (phase) {
+      case 'engage': return 'Engage';
+      case 'investigate': return 'Investigate';
+      case 'act': return 'Act';
+      default: return 'Engage';
+    }
+  };
+
+  const getPhaseDescription = (phase: string) => {
+    switch (phase) {
+      case 'engage': return 'Defina o problema central e perguntas orientadoras';
+      case 'investigate': return 'Pesquise e colete dados para fundamentar sua solução';
+      case 'act': return 'Desenvolva e implemente soluções inovadoras';
+      default: return 'Defina o problema central e perguntas orientadoras';
+    }
+  };
+
+  const PhaseIcon = getPhaseIcon(currentPhase);
+
   return (
-    <div className="p-6">
-      <div className="bg-card rounded-xl shadow-sm border">
-        <main className="p-6">
-          <div className="border-b border-border pb-4">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">
-                Fase {currentPhase} — {currentProject.title}
-              </h2>
-              <div className="text-sm text-muted-foreground mt-1">
-                Use os nudges para orientação em cada etapa.
+    <div className="container mx-auto py-6 space-y-6">
+      {/* Header do Projeto */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <PhaseIcon className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="text-2xl">
+                    {getPhaseTitle(currentPhase)} — {currentProject.title}
+                  </CardTitle>
+                  <CardDescription className="text-base">
+                    {getPhaseDescription(currentPhase)}
+                  </CardDescription>
+                </div>
               </div>
             </div>
-
-            <div className="mt-6">
-              {currentPhase === 'engage' && (
-                <EngagePane 
-                  data={currentProject} 
-                  update={handleUpdate}
-                  onPhaseTransition={handlePhaseTransition}
-                />
-              )}
-              {currentPhase === 'investigate' && (
-                <InvestigatePane 
-                  data={currentProject} 
-                  update={handleUpdate}
-                />
-              )}
-              {currentPhase === 'act' && (
-                <ActPane 
-                  data={currentProject} 
-                  update={handleUpdate}
-                />
-              )}
-            </div>
+            <Badge variant="secondary" className="text-sm">
+              Fase {currentPhase}
+            </Badge>
           </div>
-        </main>
-      </div>
+          
+          {/* Barra de Progresso do Projeto */}
+          <div className="space-y-2 pt-4">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">Progresso Geral</span>
+              <span className="text-sm text-muted-foreground">{progress}%</span>
+            </div>
+            <Progress value={progress} className="h-2" />
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* Conteúdo da Fase */}
+      <Card>
+        <CardContent className="p-6">
+          {currentPhase === 'engage' && (
+            <EngagePane 
+              data={currentProject} 
+              update={handleUpdate}
+              onPhaseTransition={handlePhaseTransition}
+            />
+          )}
+          {currentPhase === 'investigate' && (
+            <InvestigatePane 
+              data={currentProject} 
+              update={handleUpdate}
+            />
+          )}
+          {currentPhase === 'act' && (
+            <ActPane 
+              data={currentProject} 
+              update={handleUpdate}
+            />
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

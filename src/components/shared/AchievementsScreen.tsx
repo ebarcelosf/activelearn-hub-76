@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Badge } from '@/types';
 import { BadgeDefinition } from '@/utils/badgeConstants';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge as BadgeComponent } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -185,11 +185,14 @@ export default function AchievementsScreen({
   );
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-8">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-foreground mb-2">🏆 Conquistas</h2>
-        <p className="text-muted-foreground">Acompanhe seu progresso e conquistas no ActiveLearn Hub</p>
-      </div>
+    <div className="container mx-auto py-6 space-y-8">
+      <Card className="text-center">
+        <CardContent className="pt-6">
+          <div className="text-6xl mb-4">🏆</div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Conquistas</h1>
+          <p className="text-muted-foreground">Acompanhe seu progresso e conquistas no ActiveLearn Hub</p>
+        </CardContent>
+      </Card>
 
       {/* Estatísticas gerais */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

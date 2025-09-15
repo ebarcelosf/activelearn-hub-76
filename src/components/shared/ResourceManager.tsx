@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Trash2, Plus, Edit, ExternalLink, Star } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
@@ -122,19 +122,19 @@ export const ResourceManager: React.FC<ResourceManagerProps> = ({
   };
 
   return (
-    <div className="bg-muted/30 p-6 rounded-xl border border-border">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h3 className="text-lg font-semibold text-foreground">{title}</h3>
-          <p className="text-sm text-muted-foreground mt-1">{description}</p>
-        </div>
-        {!isAdding && (
+    <div className="space-y-6">
+      {!isAdding && (
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">📚 Recursos de Pesquisa</h3>
+            <p className="text-sm text-muted-foreground mt-1">Colete e organize materiais relevantes para sua pesquisa</p>
+          </div>
           <Button onClick={() => setIsAdding(true)}>
             <Plus className="w-4 h-4 mr-2" />
             Novo Recurso
           </Button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Formulário de adição/edição */}
       {isAdding && (
@@ -308,11 +308,15 @@ export const ResourceManager: React.FC<ResourceManagerProps> = ({
       </div>
 
       {resources.length === 0 && !isAdding && (
-        <div className="text-center py-8 text-muted-foreground">
-          <div className="text-2xl mb-2">📚</div>
-          <div>Nenhum recurso coletado ainda.</div>
-          <div className="text-sm mt-1">Clique em "Novo Recurso" para começar.</div>
-        </div>
+        <Card className="text-center py-12">
+          <CardContent>
+            <div className="text-6xl mb-4">📚</div>
+            <CardTitle className="mb-2">Nenhum recurso coletado ainda</CardTitle>
+            <CardDescription>
+              Clique em "Novo Recurso" para começar a coletar materiais para sua pesquisa
+            </CardDescription>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

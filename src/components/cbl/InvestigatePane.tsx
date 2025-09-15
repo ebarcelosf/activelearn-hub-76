@@ -3,11 +3,13 @@ import { AddQuestionForm } from '@/components/shared/FormComponents';
 import { ActivityManager } from '@/components/shared/ActivityManager';
 import { ResourceManager } from '@/components/shared/ResourceManager';
 import { SynthesisManager } from '@/components/shared/SynthesisManager';
-import { ChecklistEditor } from '@/components/shared/ChecklistEditor';
+import { ChecklistEditorCard } from '@/components/shared/ChecklistEditorCard';
 import { useBadgeContext } from '@/contexts/BadgeContext';
 import { useNudges } from '@/hooks/useNudges';
 import { NudgeModal } from '@/components/shared/NudgeModal';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Lightbulb } from 'lucide-react';
 
 interface InvestigatePaneProps {
@@ -189,103 +191,119 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
   ];
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-foreground">Investigate — Pesquise e responda perguntas-guia</h3>
-
+    <div className="space-y-8">
       {/* Navegação das Seções */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {sections.map(section => (
-          <button
+          <Card 
             key={section.id}
-            onClick={() => setActiveSection(section.id)}
-            className={`p-4 rounded-xl border-2 text-left transition-all duration-200 hover:shadow-md ${
+            className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
               activeSection === section.id
-                ? 'border-secondary bg-secondary/10 shadow-sm'
-                : 'border-border bg-card hover:border-secondary/50'
+                ? 'ring-2 ring-secondary border-secondary/50'
+                : ''
             }`}
+            onClick={() => setActiveSection(section.id)}
           >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-2xl">{section.icon}</span>
-              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                section.completed
-                  ? 'bg-green-500 border-green-500 text-white'
-                  : 'border-border'
-              }`}>
-                {section.completed && <span className="text-xs">✓</span>}
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-2xl">{section.icon}</div>
+                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                  section.completed
+                    ? 'bg-green-500 border-green-500 text-white'
+                    : 'border-border'
+                }`}>
+                  {section.completed && <span className="text-xs">✓</span>}
+                </div>
               </div>
-            </div>
-            <div className="font-semibold text-foreground mb-1">{section.title}</div>
-            <div className="text-xs text-muted-foreground mb-1">{section.description}</div>
-            {section.count && (
-              <div className="text-xs text-accent font-medium">{section.count}</div>
-            )}
-          </button>
+              <CardTitle className="text-sm mb-1">{section.title}</CardTitle>
+              <CardDescription className="text-xs mb-1">{section.description}</CardDescription>
+              {section.count && (
+                <Badge variant="secondary" className="text-xs">
+                  {section.count}
+                </Badge>
+              )}
+            </CardContent>
+          </Card>
         ))}
       </div>
 
       {/* Conteúdo das Seções */}
       <div className="space-y-6">
         {activeSection === 'guiding-questions' && (
-          <div className="bg-card p-6 rounded-xl border shadow-sm hover:shadow-md transition-all duration-200">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <div className="font-semibold text-lg text-foreground">Guiding Questions</div>
-                <div className="text-muted-foreground text-sm mt-1">Perguntas-guia para orientar sua pesquisa</div>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => openNudgeModal('Investigate', 'Guiding Questions')}
-                className="flex items-center gap-1 text-xs"
-              >
-                <Lightbulb className="h-3 w-3" />
-                Obter Nudges
-              </Button>
-            </div>
-            
-            <div className="mt-4">
-              {(data.guidingQuestions || []).length === 0 && (
-                <div className="text-center p-6 text-muted-foreground bg-muted rounded-lg border">
-                  <div className="text-2xl mb-2">🔍</div>
-                  <div>Nenhuma pergunta adicionada ainda.</div>
-                  <div className="text-sm mt-1">Use o campo abaixo para adicionar sua primeira pergunta-guia.</div>
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    ❓ Guiding Questions
+                  </CardTitle>
+                  <CardDescription>
+                    Perguntas-guia para orientar sua pesquisa
+                  </CardDescription>
                 </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => openNudgeModal('Investigate', 'Guiding Questions')}
+                  className="flex items-center gap-2"
+                >
+                  <Lightbulb className="h-4 w-4" />
+                  Obter Nudges
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {(data.guidingQuestions || []).length === 0 && (
+                <Card className="text-center py-8">
+                  <CardContent>
+                    <div className="text-6xl mb-4">🔍</div>
+                    <CardTitle className="mb-2">Nenhuma pergunta adicionada ainda</CardTitle>
+                    <CardDescription>
+                      Use o campo abaixo para adicionar sua primeira pergunta-guia
+                    </CardDescription>
+                  </CardContent>
+                </Card>
               )}
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {(data.guidingQuestions || []).map((q: string, i: number) => (
-                  <div key={i} className="bg-muted p-4 rounded-lg border shadow-sm">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="text-sm text-muted-foreground font-medium flex-1">{q}</div>
-                      <button
-                        onClick={() => removeGuidingQuestion(i)}
-                        className="ml-2 px-2 py-1 text-xs text-destructive hover:bg-destructive hover:text-destructive-foreground rounded transition-all duration-200"
-                        title="Remover pergunta"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                    <textarea
-                      value={(data.answers && data.answers[i] && data.answers[i].a) || ''}
-                      onChange={(e) => setAnswer(i, e.target.value)}
-                      placeholder="Digite sua resposta aqui..."
-                      rows={3}
-                      className="w-full p-3 rounded-lg bg-background border text-foreground focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200"
-                    />
-                    {data.answers && data.answers[i] && data.answers[i].a && data.answers[i].a.trim().length > 0 && (
-                      <div className="mt-2 text-xs text-green-600">
-                        ✅ Respondida ({data.answers[i].a.trim().length} caracteres)
+                  <Card key={i}>
+                    <CardHeader className="pb-3">
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-base flex-1">{q}</CardTitle>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeGuidingQuestion(i)}
+                          className="text-destructive hover:text-destructive ml-2"
+                        >
+                          ✕
+                        </Button>
                       </div>
-                    )}
-                  </div>
+                    </CardHeader>
+                    <CardContent className="pt-0 space-y-3">
+                      <textarea
+                        value={(data.answers && data.answers[i] && data.answers[i].a) || ''}
+                        onChange={(e) => setAnswer(i, e.target.value)}
+                        placeholder="Digite sua resposta aqui..."
+                        rows={3}
+                        className="w-full p-3 rounded-lg bg-background border text-foreground focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200"
+                      />
+                      {data.answers && data.answers[i] && data.answers[i].a && data.answers[i].a.trim().length > 0 && (
+                        <Badge variant="secondary" className="bg-green-100 text-green-800">
+                          ✅ Respondida ({data.answers[i].a.trim().length} caracteres)
+                        </Badge>
+                      )}
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
 
-              <div className="mt-4">
+              <div className="mt-6">
                 <AddQuestionForm onAdd={addGuidingQuestion} />
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         )}
 
         {activeSection === 'guiding-activities' && (
@@ -376,42 +394,41 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
         )}
 
         {/* Checklist Personalizada */}
-        <div className="bg-card p-6 rounded-xl border shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div className="font-medium text-lg text-foreground">Checklist Personalizada</div>
-            <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-lg">Customize suas tarefas</div>
-          </div>
-          <div className="mt-4">
-            <ChecklistEditor
-              items={data.investigateChecklistItems || []}
-              onAdd={addChecklist}
-              onToggle={toggleChecklist}
-              onRemove={removeChecklistItem}
-            />
-          </div>
-        </div>
+        <ChecklistEditorCard
+          items={data.investigateChecklistItems || []}
+          onAdd={addChecklist}
+          onToggle={toggleChecklist}
+          onRemove={removeChecklistItem}
+          title="Checklist da Fase Investigate"
+          description="Adicione tarefas específicas para esta fase"
+        />
 
         {/* Botão de Conclusão */}
-        <div className="flex gap-3 items-center">
-          <button
-            onClick={markComplete}
-            disabled={!canComplete}
-            className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-              canComplete
-                ? 'bg-secondary text-secondary-foreground hover:bg-secondary/90 hover:shadow-lg'
-                : 'bg-muted text-muted-foreground cursor-not-allowed border border-border'
-            }`}
-          >
-            {canComplete ? '✅ Marcar Investigate como concluído' : '⏳ Complete 3 perguntas e 1 atividade'}
-          </button>
-          <div className={`px-3 py-2 rounded-lg text-sm font-medium ${
-            data.investigateCompleted
-              ? 'bg-green-500 text-white'
-              : 'bg-yellow-500 text-white'
-          }`}>
-            {data.investigateCompleted ? '✅ Concluído' : `⏳ ${sectionsCompleted}/4 seções • ${answeredCount}/3 respostas • ${completedActivities}/${activities.length} atividades`}
-          </div>
-        </div>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              <div className="space-y-2">
+                <h3 className="font-semibold">Concluir Fase Investigate</h3>
+                <p className="text-sm text-muted-foreground">
+                  Complete pelo menos 3 perguntas respondidas e 1 atividade para avançar
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                <Badge variant={data.investigateCompleted ? "default" : "secondary"}>
+                  {data.investigateCompleted ? '✅ Concluído' : `⏳ ${sectionsCompleted}/4 seções • ${answeredCount}/3 respostas • ${completedActivities}/${activities.length} atividades`}
+                </Badge>
+                <Button
+                  onClick={markComplete}
+                  disabled={!canComplete}
+                  size="lg"
+                  className={!canComplete ? "opacity-60" : ""}
+                >
+                  {canComplete ? '✅ Marcar Investigate como concluído' : '⏳ Complete 3 perguntas e 1 atividade'}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
       
       <NudgeModal

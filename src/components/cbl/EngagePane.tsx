@@ -16,7 +16,7 @@ interface EngagePaneProps {
 export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
   const [activeSection, setActiveSection] = useState('big-ideas');
   const { checkTrigger } = useBadgeContext();
-  const { isModalOpen, currentNudges, currentCategory, currentPhase, openNudgeModal, refreshNudges, closeModal } = useNudges();
+  const { isModalOpen, currentCategory, currentPhase, openNudgeModal, closeModal } = useNudges();
 
   const setField = (field: string, value: string) => {
     update(field, value);
@@ -294,10 +294,8 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update }) => {
       <NudgeModal
         isOpen={isModalOpen}
         onClose={closeModal}
-        nudges={currentNudges}
         category={currentCategory}
         phase={currentPhase}
-        onRefresh={refreshNudges}
       />
     </div>
   );

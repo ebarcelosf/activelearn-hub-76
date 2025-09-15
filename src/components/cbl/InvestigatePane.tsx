@@ -18,7 +18,7 @@ interface InvestigatePaneProps {
 export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }) => {
   const [activeSection, setActiveSection] = useState('guiding-questions');
   const { checkTrigger } = useBadgeContext();
-  const { isModalOpen, currentNudges, currentCategory, currentPhase, openNudgeModal, refreshNudges, closeModal } = useNudges();
+  const { isModalOpen, currentCategory, currentPhase, openNudgeModal, closeModal } = useNudges();
 
   function setAnswer(idx: number, text: string) {
     const answers = [...(data.answers || [])];
@@ -289,39 +289,90 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
         )}
 
         {activeSection === 'guiding-activities' && (
-          <ActivityManager
-            activities={activities}
-            onAdd={addActivity}
-            onUpdate={updateActivity}
-            onRemove={removeActivity}
-            onToggleStatus={toggleActivityStatus}
-            title="Guiding Activities"
-            description="Atividades práticas para coletar dados e informações"
-          />
+          <div className="bg-card p-6 rounded-xl border shadow-sm hover:shadow-md transition-all duration-200">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="font-semibold text-lg text-foreground">Guiding Activities</div>
+                <div className="text-muted-foreground text-sm mt-1">Atividades práticas para coletar dados e informações</div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openNudgeModal('Investigate', 'Guiding Activities')}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Lightbulb className="h-3 w-3" />
+                Obter Nudges
+              </Button>
+            </div>
+            <ActivityManager
+              activities={activities}
+              onAdd={addActivity}
+              onUpdate={updateActivity}
+              onRemove={removeActivity}
+              onToggleStatus={toggleActivityStatus}
+              title=""
+              description=""
+            />
+          </div>
         )}
 
         {activeSection === 'guiding-resources' && (
-          <ResourceManager
-            resources={resources}
-            onAdd={addResource}
-            onUpdate={updateResource}
-            onRemove={removeResource}
-            title="Guiding Resources"
-            description="Colete artigos, vídeos e entrevistas relevantes"
-          />
+          <div className="bg-card p-6 rounded-xl border shadow-sm hover:shadow-md transition-all duration-200">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="font-semibold text-lg text-foreground">Guiding Resources</div>
+                <div className="text-muted-foreground text-sm mt-1">Colete artigos, vídeos e entrevistas relevantes</div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openNudgeModal('Investigate', 'Guiding Resources')}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Lightbulb className="h-3 w-3" />
+                Obter Nudges
+              </Button>
+            </div>
+            <ResourceManager
+              resources={resources}
+              onAdd={addResource}
+              onUpdate={updateResource}
+              onRemove={removeResource}
+              title=""
+              description=""
+            />
+          </div>
         )}
 
         {activeSection === 'research-synthesis' && (
-          <SynthesisManager
-            synthesis={synthesis}
-            onUpdate={updateSynthesis}
-            questions={data.guidingQuestions || []}
-            answers={data.answers || []}
-            resources={resources}
-            activities={activities}
-            title="Research Synthesis"
-            description="Resuma os principais insights e padrões descobertos"
-          />
+          <div className="bg-card p-6 rounded-xl border shadow-sm hover:shadow-md transition-all duration-200">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="font-semibold text-lg text-foreground">Research Synthesis</div>
+                <div className="text-muted-foreground text-sm mt-1">Resuma os principais insights e padrões descobertos</div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openNudgeModal('Investigate', 'Research Synthesis')}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Lightbulb className="h-3 w-3" />
+                Obter Nudges
+              </Button>
+            </div>
+            <SynthesisManager
+              synthesis={synthesis}
+              onUpdate={updateSynthesis}
+              questions={data.guidingQuestions || []}
+              answers={data.answers || []}
+              resources={resources}
+              activities={activities}
+              title=""
+              description=""
+            />
+          </div>
         )}
 
         {/* Checklist Personalizada */}
@@ -366,10 +417,8 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
       <NudgeModal
         isOpen={isModalOpen}
         onClose={closeModal}
-        nudges={currentNudges}
         category={currentCategory}
         phase={currentPhase}
-        onRefresh={refreshNudges}
       />
     </div>
   );

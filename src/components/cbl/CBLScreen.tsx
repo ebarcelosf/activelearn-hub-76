@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { PhaseSidebar, NudgeModal } from './CBLHelpers';
+import { PhaseSidebar } from './CBLHelpers';
 import { EngagePane } from './EngagePane';
 import { InvestigatePane } from './InvestigatePane';
 import { ActPane } from './ActPane';
-import { Button } from '@/components/ui/button';
 import { useProjects } from '@/contexts/ProjectContext';
 
 export const CBLScreen: React.FC = () => {
   const { currentProject, updateProject } = useProjects();
   const { phase } = useParams<{ phase: string }>();
   const navigate = useNavigate();
-  const [nudgeOpen, setNudgeOpen] = useState(false);
   
   const currentPhase = phase || 'engage';
 
@@ -46,18 +44,13 @@ export const CBLScreen: React.FC = () => {
       <div className="flex-1 bg-card rounded-xl shadow-sm border">
         <main className="p-6">
           <div className="border-b border-border pb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-foreground">
-                  Fase {currentPhase} — {currentProject.title}
-                </h2>
-                <div className="text-sm text-muted-foreground mt-1">
-                  Use os nudges para orientação em cada etapa.
-                </div>
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">
+                Fase {currentPhase} — {currentProject.title}
+              </h2>
+              <div className="text-sm text-muted-foreground mt-1">
+                Use os nudges para orientação em cada etapa.
               </div>
-              <Button onClick={() => setNudgeOpen(true)}>
-                Obter Nudge
-              </Button>
             </div>
 
             <div className="mt-6">
@@ -83,13 +76,6 @@ export const CBLScreen: React.FC = () => {
           </div>
         </main>
       </div>
-
-      <NudgeModal 
-        visible={nudgeOpen} 
-        phase={currentPhase} 
-        project={currentProject} 
-        onClose={() => setNudgeOpen(false)}
-      />
     </div>
   );
 };

@@ -1,33 +1,36 @@
 // components/shared/NudgeModal.tsx
-import React, { useState } from 'react';
-import { NudgeItem } from '@/utils/nudgeConstants';
+import React, { useState, useEffect } from 'react';
+import { NudgeItem, getNudgesByCategory } from '@/utils/nudgeConstants';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Lightbulb, RefreshCw, X } from 'lucide-react';
+import { Lightbulb, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface NudgeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  nudges: NudgeItem[];
   category: string;
   phase: string;
-  onRefresh: () => void;
 }
 
 export const NudgeModal: React.FC<NudgeModalProps> = ({ 
   isOpen, 
   onClose, 
-  nudges, 
   category, 
-  phase,
-  onRefresh 
+  phase
 }) => {
   const [selectedNudgeIndex, setSelectedNudgeIndex] = useState(0);
+  const [nudges, setNudges] = useState<NudgeItem[]>([]);
 
-  console.log('NudgeModal rendered with:', { isOpen, nudges, category, phase });
-  
+  useEffect(() => {
+    if (isOpen && phase && category) {
+      const allNudges = getNudgesByCategory(phase as 'Engage' | 'Investigate' | 'Act', category);
+      setNudges(allNudges);
+      setSelectedNudgeIndex(0);
+    }
+  }, [isOpen, phase, category]);
+
   const selectedNudge = nudges[selectedNudgeIndex];
 
   const handleNext = () => {
@@ -78,33 +81,26 @@ export const NudgeModal: React.FC<NudgeModalProps> = ({
                 size="sm"
                 onClick={handlePrevious}
                 disabled={nudges.length <= 1}
+                className="flex items-center gap-1"
               >
-                ← Anterior
+                <ChevronLeft className="h-3 w-3" />
+                Anterior
               </Button>
               <Button 
                 variant="outline" 
                 size="sm"
                 onClick={handleNext}
                 disabled={nudges.length <= 1}
+                className="flex items-center gap-1"
               >
-                Próximo →
+                Próximo
+                <ChevronRight className="h-3 w-3" />
               </Button>
             </div>
             
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={onRefresh}
-                className="flex items-center gap-1"
-              >
-                <RefreshCw className="h-3 w-3" />
-                Novos Nudges
-              </Button>
-              <Button variant="default" onClick={onClose}>
-                Fechar
-              </Button>
-            </div>
+            <Button variant="default" onClick={onClose}>
+              Fechar
+            </Button>
           </div>
 
           {/* Lista de todos os nudges */}

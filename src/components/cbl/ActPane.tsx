@@ -6,6 +6,7 @@ import { PrototypeManager } from '@/components/shared/PrototypeManager';
 import { ChecklistEditor } from '@/components/shared/ChecklistEditor';
 import { useBadgeContext } from '@/contexts/BadgeContext';
 import { useNudges } from '@/hooks/useNudges';
+import { NudgeModal } from '@/components/shared/NudgeModal';
 import { Button } from '@/components/ui/button';
 import { Lightbulb } from 'lucide-react';
 
@@ -17,7 +18,7 @@ interface ActPaneProps {
 export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
   const [activeSection, setActiveSection] = useState('solution-development');
   const { checkTrigger } = useBadgeContext();
-  const { openNudgeModal } = useNudges();
+  const { isModalOpen, currentCategory, currentPhase, openNudgeModal, closeModal } = useNudges();
 
   // Atualizar dados da solução
   function updateSolution(field: string, value: any) {
@@ -181,41 +182,109 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
       {/* Conteúdo das Seções */}
       <div className="space-y-6">
         {activeSection === 'solution-development' && (
-          <SolutionManager
-            solution={data.solution || {}}
-            onUpdate={updateSolution}
-            title="Solution Development"
-            description="Desenvolva soluções concretas e inovadoras para seu desafio"
-          />
+          <div className="bg-card p-6 rounded-xl border shadow-sm hover:shadow-md transition-all duration-200">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="font-semibold text-lg text-foreground">Solution Development</div>
+                <div className="text-muted-foreground text-sm mt-1">Desenvolva soluções concretas e inovadoras para seu desafio</div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openNudgeModal('Act', 'Solution Development')}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Lightbulb className="h-3 w-3" />
+                Obter Nudges
+              </Button>
+            </div>
+            <SolutionManager
+              solution={data.solution || {}}
+              onUpdate={updateSolution}
+              title=""
+              description=""
+            />
+          </div>
         )}
 
         {activeSection === 'implementation' && (
-          <ImplementationManager
-            implementation={data.implementation || {}}
-            onUpdate={updateImplementation}
-            title="Implementation Plan"
-            description="Defina como sua solução será construída e implementada"
-          />
+          <div className="bg-card p-6 rounded-xl border shadow-sm hover:shadow-md transition-all duration-200">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="font-semibold text-lg text-foreground">Implementation Plan</div>
+                <div className="text-muted-foreground text-sm mt-1">Defina como sua solução será construída e implementada</div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openNudgeModal('Act', 'Implementation')}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Lightbulb className="h-3 w-3" />
+                Obter Nudges
+              </Button>
+            </div>
+            <ImplementationManager
+              implementation={data.implementation || {}}
+              onUpdate={updateImplementation}
+              title=""
+              description=""
+            />
+          </div>
         )}
 
         {activeSection === 'evaluation' && (
-          <EvaluationManager
-            evaluation={data.evaluation || {}}
-            onUpdate={updateEvaluation}
-            title="Evaluation Criteria"
-            description="Estabeleça como medir o sucesso da sua solução"
-          />
+          <div className="bg-card p-6 rounded-xl border shadow-sm hover:shadow-md transition-all duration-200">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="font-semibold text-lg text-foreground">Evaluation Criteria</div>
+                <div className="text-muted-foreground text-sm mt-1">Estabeleça como medir o sucesso da sua solução</div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openNudgeModal('Act', 'Evaluation')}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Lightbulb className="h-3 w-3" />
+                Obter Nudges
+              </Button>
+            </div>
+            <EvaluationManager
+              evaluation={data.evaluation || {}}
+              onUpdate={updateEvaluation}
+              title=""
+              description=""
+            />
+          </div>
         )}
 
         {activeSection === 'prototypes' && (
-          <PrototypeManager
-            prototypes={data.prototypes || []}
-            onAdd={addPrototype}
-            onUpdate={updatePrototype}
-            onRemove={removePrototype}
-            title="Prototypes"
-            description="Crie e teste protótipos da sua solução"
-          />
+          <div className="bg-card p-6 rounded-xl border shadow-sm hover:shadow-md transition-all duration-200">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="font-semibold text-lg text-foreground">Prototypes</div>
+                <div className="text-muted-foreground text-sm mt-1">Crie e teste protótipos da sua solução</div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openNudgeModal('Act', 'Prototypes')}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Lightbulb className="h-3 w-3" />
+                Obter Nudges
+              </Button>
+            </div>
+            <PrototypeManager
+              prototypes={data.prototypes || []}
+              onAdd={addPrototype}
+              onUpdate={updatePrototype}
+              onRemove={removePrototype}
+              title=""
+              description=""
+            />
+          </div>
         )}
 
         {/* Checklist Personalizada */}
@@ -256,6 +325,13 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
           </div>
         </div>
       </div>
+      
+      <NudgeModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        category={currentCategory}
+        phase={currentPhase}
+      />
     </div>
   );
 };

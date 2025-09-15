@@ -9,10 +9,14 @@ interface MainLayoutProps {
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const handleMenuClick = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header 
-        onMenuClick={() => setSidebarOpen(true)}
+        onMenuClick={handleMenuClick}
         showMenuButton={true}
       />
       

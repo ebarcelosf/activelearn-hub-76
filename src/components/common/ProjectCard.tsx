@@ -26,6 +26,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
   
   const progress = getProjectProgress(project);
   
+  // Garantir que o progresso seja um número válido
+  const displayProgress = isNaN(progress) ? 0 : Math.max(0, Math.min(100, progress));
+  
   const getPhaseColor = (phase: string) => {
     switch (phase) {
       case 'engage':
@@ -115,9 +118,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Progresso</span>
-              <span className="font-medium">{progress}%</span>
+              <span className="font-medium">{displayProgress}%</span>
             </div>
-            <Progress value={progress} className="h-2" />
+            <Progress value={displayProgress} className="h-2" />
           </div>
 
           {/* Phase Badge */}

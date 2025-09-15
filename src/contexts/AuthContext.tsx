@@ -81,7 +81,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateUser = (updates: Partial<User>) => {
     if (user) {
-      setUser({ ...user, ...updates });
+      const updatedUser = { ...user, ...updates };
+      // Atualizar XP e level no badge context se houver mudanças
+      setUser(updatedUser);
     }
   };
 

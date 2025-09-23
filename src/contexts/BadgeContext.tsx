@@ -1,8 +1,9 @@
-// contexts/BadgeContext.tsx
 import React, { createContext, useContext, ReactNode } from 'react';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useBadges } from '@/hooks/useBadges';
-import { BadgeNotification } from '@/components/shared/BadgeNotification';
-import { useSettings } from './SettingsContext';
+import { Badge, Project } from '@/types';
+import { useAuth } from './AuthContext';
+import { getUserDataKey } from '@/utils/auth';
 
 const BadgeContext = createContext<ReturnType<typeof useBadges> | undefined>(undefined);
 
@@ -24,19 +25,28 @@ interface BadgeProviderProps {
 }
 
 export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
+  const { user } = useAuth();
+  const storageKey = user ? getUserDataKey(user.id, 'badges') : 'earned_badges_temp';
+  const [earnedBadges, setEarnedBadges] = useLocalStorage<Badge[]>(storageKey, []);
   const badgeState = useBadges();
-  const { settings } = useSettings();
+
+  // Reset badges when user changes
+  React.useEffect(() => {
+    if (user) {
+      const userBadges = localStorage.getItem(getUserDataKey(user.id, 'badges'));
+      if (userBadges) {
+        setEarnedBadges(JSON.parse(userBadges));
+      } else {
+        setEarnedBadges([]);
+      }
+    } else {
+      setEarnedBadges([]);
+    }
+  }, [user, setEarnedBadges]);
 
   return (
     <BadgeContext.Provider value={badgeState}>
       {children}
-      {badgeState.recentBadge && settings.showBadgeNotifications && (
-        <BadgeNotification
-          badge={badgeState.recentBadge}
-          show={badgeState.showNotification}
-          onDismiss={badgeState.dismissNotification}
-        />
-      )}
     </BadgeContext.Provider>
   );
 };

@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/components/ui/theme-provider';
-import { useSettings } from '@/contexts/SettingsContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,98 +7,115 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
-import { User, Settings as SettingsIcon, Moon, Sun, Monitor, Trash2 } from 'lucide-react';
+import { User, Settings as SettingsIcon, Moon, Sun, Monitor, Trash2, Mail, Bell, BellOff, Globe, Shield, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const Settings: React.FC = () => {
-  const { user, updateUser, deleteAccount } = useAuth();
-  const { theme, setTheme } = useTheme();
-  const { settings, updateSettings } = useSettings();
+  const navigate = useNavigate();
+  const { 
+    user, 
+    updateProfile, 
+    updatePassword, 
+    updateSettings, 
+    deleteAccount, 
+    logout,
+    isLoading,
+    error,
+    clearError
+  } = useAuth();
   
-  const [formData, setFormData] = useState({
-    name: user?.name || '',
+  const [profileForm, setProfileForm] = useState({
+    name: user?.name || ''
+  });
+  
+  const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
+  
+  const [deleteForm, setDeleteForm] = useState({
+    password: ''
+  });
+  
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleSaveProfile = () => {
-    if (!user) return;
-
-    const updates: any = {};
-
-    // Update name if changed
-    if (formData.name !== user.name) {
-      updates.name = formData.name;
+  // Update form when user changes
+  React.useEffect(() => {
+    if (user) {
+      setProfileForm({ name: user.name });
     }
+  }, [user]);
 
-    // Update password if provided
-    if (formData.newPassword) {
-      if (formData.newPassword !== formData.confirmPassword) {
-        toast({
-          title: "Erro",
-          description: "As senhas não coincidem.",
-          variant: "destructive"
-        });
-        return;
-      }
-      // In a real app, you would validate current password
-      // For this demo, we'll just update
-      updates.password = formData.newPassword;
-    }
-
-    if (Object.keys(updates).length > 0) {
-      updateUser(updates);
+  const handleProfileSave = async () => {
+    const success = await updateProfile(profileForm);
+    if (success) {
       toast({
         title: "Perfil atualizado",
-        description: "Suas alterações foram salvas com sucesso."
+        description: "Suas informações foram salvas com sucesso."
       });
-      
-      // Clear password fields
-      setFormData(prev => ({
-        ...prev,
+    } else if (error) {
+      toast({
+        title: "Erro",
+        description: error,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    clearError();
+    const success = await updatePassword(passwordForm);
+    if (success) {
+      setPasswordForm({
         currentPassword: '',
         newPassword: '',
         confirmPassword: ''
-      }));
+      });
+      setIsPasswordDialogOpen(false);
+      toast({
+        title: "Senha alterada",
+        description: "Sua senha foi alterada com sucesso."
+      });
+    } else if (error) {
+      toast({
+        title: "Erro",
+        description: error,
+        variant: "destructive"
+      });
     }
   };
 
-  const handleNotificationToggle = (enabled: boolean) => {
-    if (!user) return;
-    
-    updateUser({
-      settings: {
-        ...user.settings,
-        notifications: enabled
-      }
-    });
-    
-    toast({
-      title: enabled ? "Notificações ativadas" : "Notificações desativadas",
-      description: `Você ${enabled ? 'receberá' : 'não receberá'} notificações de conquistas.`
-    });
+  const handleSettingsUpdate = async (updates: any) => {
+    const success = await updateSettings(updates);
+    if (success) {
+      toast({
+        title: "Configurações atualizadas",
+        description: "Suas preferências foram salvas."
+      });
+    }
   };
 
-  const handleThemeChange = (newTheme: string) => {
-    setTheme(newTheme as "light" | "dark" | "system");
-    toast({
-      title: "Tema alterado",
-      description: `Tema alterado para ${newTheme === 'light' ? 'claro' : newTheme === 'dark' ? 'escuro' : 'sistema'}.`
-    });
-  };
-
-  const handleDeleteAccount = () => {
-    deleteAccount();
-    toast({
-      title: "Conta excluída",
-      description: "Sua conta foi excluída permanentemente.",
-      variant: "destructive"
-    });
+  const handleDeleteAccount = async () => {
+    clearError();
+    const success = await deleteAccount(deleteForm.password);
+    if (success) {
+      toast({
+        title: "Conta excluída",
+        description: "Sua conta foi excluída permanentemente.",
+        variant: "destructive"
+      });
+      navigate('/login');
+    } else if (error) {
+      toast({
+        title: "Erro",
+        description: error,
+        variant: "destructive"
+      });
+    }
   };
 
   if (!user) return null;
@@ -113,64 +128,139 @@ export const Settings: React.FC = () => {
       </div>
 
       <div className="space-y-6">
-        {/* Editar Perfil */}
+        {/* Perfil */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="h-5 w-5" />
-              Editar Perfil
+              Perfil
             </CardTitle>
             <CardDescription>
-              Atualize suas informações pessoais
+              Gerencie suas informações pessoais
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nome</Label>
+              <Label htmlFor="name">Nome completo</Label>
               <Input
                 id="name"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
+                value={profileForm.name}
+                onChange={(e) => setProfileForm({ name: e.target.value })}
                 placeholder="Seu nome completo"
+                disabled={isLoading}
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="current-password">Senha Atual</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="current-password"
-                type="password"
-                value={formData.currentPassword}
-                onChange={(e) => handleInputChange('currentPassword', e.target.value)}
-                placeholder="Digite sua senha atual"
+                id="email"
+                value={user.email}
+                disabled
+                className="bg-muted"
               />
+              <p className="text-sm text-muted-foreground">
+                O email não pode ser alterado
+              </p>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="new-password">Nova Senha</Label>
-              <Input
-                id="new-password"
-                type="password"
-                value={formData.newPassword}
-                onChange={(e) => handleInputChange('newPassword', e.target.value)}
-                placeholder="Digite sua nova senha"
-              />
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleProfileSave} 
+                disabled={isLoading || profileForm.name === user.name}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  'Salvar alterações'
+                )}
+              </Button>
             </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirmar Nova Senha</Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                placeholder="Confirme sua nova senha"
-              />
-            </div>
-            
-            <Button onClick={handleSaveProfile} className="w-full sm:w-auto">
-              Salvar Alterações
-            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Segurança */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5" />
+              Segurança
+            </CardTitle>
+            <CardDescription>
+              Gerencie sua senha e configurações de segurança
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline">
+                  Alterar senha
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Alterar senha</DialogTitle>
+                  <DialogDescription>
+                    Digite sua senha atual e a nova senha para confirmar a alteração.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="current-password">Senha atual</Label>
+                    <Input
+                      id="current-password"
+                      type="password"
+                      value={passwordForm.currentPassword}
+                      onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
+                      placeholder="Digite sua senha atual"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="new-password">Nova senha</Label>
+                    <Input
+                      id="new-password"
+                      type="password"
+                      value={passwordForm.newPassword}
+                      onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
+                      placeholder="Digite sua nova senha"
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      Mínimo 8 caracteres com maiúscula, minúscula e número
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="confirm-new-password">Confirmar nova senha</Label>
+                    <Input
+                      id="confirm-new-password"
+                      type="password"
+                      value={passwordForm.confirmPassword}
+                      onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                      placeholder="Confirme sua nova senha"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsPasswordDialogOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button onClick={handlePasswordChange} disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Alterando...
+                      </>
+                    ) : (
+                      'Alterar senha'
+                    )}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </CardContent>
         </Card>
 
@@ -188,7 +278,10 @@ export const Settings: React.FC = () => {
           <CardContent>
             <div className="space-y-2">
               <Label>Tema</Label>
-              <Select value={theme} onValueChange={handleThemeChange}>
+              <Select 
+                value={user.settings.theme} 
+                onValueChange={(value) => handleSettingsUpdate({ theme: value })}
+              >
                 <SelectTrigger className="w-full sm:w-[200px]">
                   <SelectValue />
                 </SelectTrigger>
@@ -220,24 +313,113 @@ export const Settings: React.FC = () => {
         {/* Notificações */}
         <Card>
           <CardHeader>
-            <CardTitle>Notificações</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Bell className="h-5 w-5" />
+              Notificações
+            </CardTitle>
             <CardDescription>
               Configure suas preferências de notificação
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Label htmlFor="notifications">Notificações de Conquistas</Label>
+                <Label className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  Notificações por email
+                </Label>
                 <p className="text-sm text-muted-foreground">
-                  Receba notificações quando conquistar novos badges
+                  Receba atualizações importantes por email
                 </p>
               </div>
               <Switch
-                id="notifications"
-                checked={settings.showBadgeNotifications}
-                onCheckedChange={(checked) => updateSettings({ showBadgeNotifications: checked })}
+                checked={user.settings.notifications.email}
+                onCheckedChange={(checked) => 
+                  handleSettingsUpdate({ 
+                    notifications: { 
+                      ...user.settings.notifications, 
+                      email: checked 
+                    } 
+                  })
+                }
               />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label className="flex items-center gap-2">
+                  <Bell className="h-4 w-4" />
+                  Notificações push
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Receba notificações push no navegador
+                </p>
+              </div>
+              <Switch
+                checked={user.settings.notifications.push}
+                onCheckedChange={(checked) => 
+                  handleSettingsUpdate({ 
+                    notifications: { 
+                      ...user.settings.notifications, 
+                      push: checked 
+                    } 
+                  })
+                }
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label className="flex items-center gap-2">
+                  <BellOff className="h-4 w-4" />
+                  Notificações no app
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Receba notificações dentro da aplicação
+                </p>
+              </div>
+              <Switch
+                checked={user.settings.notifications.inApp}
+                onCheckedChange={(checked) => 
+                  handleSettingsUpdate({ 
+                    notifications: { 
+                      ...user.settings.notifications, 
+                      inApp: checked 
+                    } 
+                  })
+                }
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Idioma */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Globe className="h-5 w-5" />
+              Idioma
+            </CardTitle>
+            <CardDescription>
+              Selecione o idioma da aplicação
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Label>Idioma da interface</Label>
+              <Select 
+                value={user.settings.language} 
+                onValueChange={(value) => handleSettingsUpdate({ language: value })}
+              >
+                <SelectTrigger className="w-full sm:w-[200px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
+                  <SelectItem value="en-US">English (US)</SelectItem>
+                  <SelectItem value="es-ES">Español</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
@@ -254,31 +436,54 @@ export const Settings: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
+            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+              <DialogTrigger asChild>
                 <Button variant="destructive" className="w-full sm:w-auto">
                   Excluir minha conta
                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
-                  <AlertDialogDescription>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Confirmar exclusão da conta</DialogTitle>
+                  <DialogDescription>
                     Esta ação não pode ser desfeita. Isso excluirá permanentemente sua conta
-                    e removerá todos os seus dados, projetos e conquistas de nossos servidores.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction
+                    e removerá todos os seus dados, projetos e conquistas.
+                    Digite sua senha para confirmar.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="delete-password">Senha</Label>
+                    <Input
+                      id="delete-password"
+                      type="password"
+                      value={deleteForm.password}
+                      onChange={(e) => setDeleteForm({ password: e.target.value })}
+                      placeholder="Digite sua senha para confirmar"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button 
+                    variant="destructive" 
                     onClick={handleDeleteAccount}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    disabled={isLoading || !deleteForm.password}
                   >
-                    Sim, excluir conta
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Excluindo...
+                      </>
+                    ) : (
+                      'Sim, excluir conta'
+                    )}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </CardContent>
         </Card>
       </div>

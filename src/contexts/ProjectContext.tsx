@@ -3,6 +3,8 @@ import { Project } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { v4 as uuidv4 } from 'uuid';
 import { useBadgeContextOptional } from './BadgeContext';
+import { useAuth } from './AuthContext';
+import { getUserDataKey } from '@/utils/auth';
 
 interface ProjectContextType {
   projects: Project[];
@@ -26,9 +28,25 @@ export const useProjects = () => {
 };
 
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [projects, setProjects] = useLocalStorage<Project[]>('activelearn_projects', []);
+  const { user } = useAuth();
+  const storageKey = user ? getUserDataKey(user.id, 'projects') : 'activelearn_projects_temp';
+  const [projects, setProjects] = useLocalStorage<Project[]>(storageKey, []);
   const [currentProject, setCurrentProject] = React.useState<Project | null>(null);
   const badge = useBadgeContextOptional();
+
+  // Reset projects when user changes
+  React.useEffect(() => {
+    if (user) {
+      const userProjects = localStorage.getItem(getUserDataKey(user.id, 'projects'));
+      if (userProjects) {
+        setProjects(JSON.parse(userProjects));
+      } else {
+        setProjects([]);
+      }
+    } else {
+      setProjects([]);
+    }
+  }, [user, setProjects]);
 
   const createProject = (title: string, description: string): Project => {
     const newProject: Project = {

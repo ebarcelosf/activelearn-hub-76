@@ -18,7 +18,7 @@ export const Login: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await login(loginForm.email, loginForm.password);
+    const success = await login({ email: loginForm.email, password: loginForm.password });
     if (success) {
       navigate('/');
     }
@@ -26,7 +26,12 @@ export const Login: React.FC = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await register(registerForm.name, registerForm.email, registerForm.password);
+    const success = await register({ 
+      name: registerForm.name, 
+      email: registerForm.email, 
+      password: registerForm.password,
+      confirmPassword: registerForm.password
+    });
     if (success) {
       navigate('/');
     }

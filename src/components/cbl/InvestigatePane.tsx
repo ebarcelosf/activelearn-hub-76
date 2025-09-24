@@ -15,9 +15,10 @@ import { Lightbulb } from 'lucide-react';
 interface InvestigatePaneProps {
   data: any;
   update: (field: string, value: any) => void;
+  onPhaseTransition?: (phase: string) => void;
 }
 
-export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }) => {
+export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, onPhaseTransition }) => {
   const [activeSection, setActiveSection] = useState('guiding-questions');
   const badge = useBadgeContextOptional();
   const checkTrigger = badge?.checkTrigger ?? (() => {});
@@ -140,13 +141,16 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }
     if (!canComplete) {
       return alert('Para concluir, adicione: 1 pergunta, 1 atividade, 1 recurso e escreva a síntese.');
     }
-    // Marcar fase como concluída e avançar de fase
+    // Marcar fase como concluída
     update('investigateCompleted', true);
     checkTrigger('investigate_completed', { questionsAnswered: answeredCount });
-    update('phase', 'act');
     // Marcar todos os itens da checklist da fase como concluídos
     const completedChecklist = (data.investigateChecklistItems || []).map((item: any) => ({ ...item, done: true }));
     update('investigateChecklistItems', completedChecklist);
+    // Navegar para a próxima fase
+    if (onPhaseTransition) {
+      onPhaseTransition('act');
+    }
   }
 
   // Verificar conclusão das seções

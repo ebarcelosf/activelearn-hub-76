@@ -130,6 +130,7 @@ export const CBLScreen: React.FC = () => {
             <InvestigatePane 
               data={currentProject} 
               update={handleUpdate}
+              onPhaseTransition={handlePhaseTransition}
             />
           )}
           {currentPhase === 'act' && (

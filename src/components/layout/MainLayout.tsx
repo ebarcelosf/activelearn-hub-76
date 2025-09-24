@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
+import { BadgeNotification } from '@/components/shared/BadgeNotification';
+import { useBadgeContextOptional } from '@/contexts/BadgeContext';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -8,6 +10,7 @@ interface MainLayoutProps {
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const badgeContext = useBadgeContextOptional();
 
   const handleMenuClick = () => {
     setSidebarOpen(!sidebarOpen);
@@ -30,6 +33,15 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           {children}
         </main>
       </div>
+      
+      {/* Badge Notification */}
+      {badgeContext?.recentBadge && (
+        <BadgeNotification
+          badge={badgeContext.recentBadge}
+          show={badgeContext.showNotification}
+          onDismiss={badgeContext.dismissNotification}
+        />
+      )}
     </div>
   );
 };

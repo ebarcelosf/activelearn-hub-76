@@ -1,23 +1,81 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Trophy, Lightbulb, Search, Rocket } from 'lucide-react';
+import { Eye, EyeOff, Trophy, Lightbulb, Search, Rocket, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { validateEmail, validatePassword } from '@/utils/auth';
 
 export const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
-  const [registerForm, setRegisterForm] = useState({ name: '', email: '', password: '' });
-  const { login, register, isLoading } = useAuth();
+  const [registerForm, setRegisterForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const { login, register, isLoading, error, clearError } = useAuth();
   const navigate = useNavigate();
+
+  const validateLoginForm = (): boolean => {
+    const errors: Record<string, string> = {};
+    
+    if (!loginForm.email) {
+      errors.email = 'Email é obrigatório';
+    } else if (!validateEmail(loginForm.email)) {
+      errors.email = 'Email inválido';
+    }
+    
+    if (!loginForm.password) {
+      errors.password = 'Senha é obrigatória';
+    }
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const validateRegisterForm = (): boolean => {
+    const errors: Record<string, string> = {};
+    
+    if (!registerForm.name.trim()) {
+      errors.name = 'Nome é obrigatório';
+    } else if (registerForm.name.trim().length < 2) {
+      errors.name = 'Nome deve ter pelo menos 2 caracteres';
+    }
+    
+    if (!registerForm.email) {
+      errors.email = 'Email é obrigatório';
+    } else if (!validateEmail(registerForm.email)) {
+      errors.email = 'Email inválido';
+    }
+    
+    if (!registerForm.password) {
+      errors.password = 'Senha é obrigatória';
+    } else {
+      const passwordValidation = validatePassword(registerForm.password);
+      if (!passwordValidation.isValid) {
+        errors.password = passwordValidation.errors[0];
+      }
+    }
+    
+    if (!registerForm.confirmPassword) {
+      errors.confirmPassword = 'Confirmação de senha é obrigatória';
+    } else if (registerForm.password !== registerForm.confirmPassword) {
+      errors.confirmPassword = 'Senhas não coincidem';
+    }
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    clearError();
+    
+    if (!validateLoginForm()) return;
+    
     const success = await login({ email: loginForm.email, password: loginForm.password });
     if (success) {
       navigate('/');
@@ -26,15 +84,19 @@ export const Login: React.FC = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await register({ 
-      name: registerForm.name, 
-      email: registerForm.email, 
-      password: registerForm.password,
-      confirmPassword: registerForm.password
-    });
+    clearError();
+    
+    if (!validateRegisterForm()) return;
+    
+    const success = await register(registerForm);
     if (success) {
       navigate('/');
     }
+  };
+
+  const handleTabChange = () => {
+    clearError();
+    setValidationErrors({});
   };
 
   return (
@@ -132,11 +194,18 @@ export const Login: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="login" className="w-full">
+              <Tabs defaultValue="login" className="w-full" onValueChange={handleTabChange}>
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="login">Entrar</TabsTrigger>
                   <TabsTrigger value="register">Cadastrar</TabsTrigger>
                 </TabsList>
+                
+                {error && (
+                  <Alert variant="destructive" className="mt-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
                 
                 <TabsContent value="login">
                   <form onSubmit={handleLogin} className="space-y-4">
@@ -148,8 +217,11 @@ export const Login: React.FC = () => {
                         placeholder="seu@email.com"
                         value={loginForm.email}
                         onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
-                        required
+                        disabled={isLoading}
                       />
+                      {validationErrors.email && (
+                        <p className="text-sm text-destructive">{validationErrors.email}</p>
+                      )}
                     </div>
                     
                     <div className="space-y-2">
@@ -161,7 +233,7 @@ export const Login: React.FC = () => {
                           placeholder="Sua senha"
                           value={loginForm.password}
                           onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
-                          required
+                          disabled={isLoading}
                         />
                         <Button
                           type="button"
@@ -169,6 +241,7 @@ export const Login: React.FC = () => {
                           size="sm"
                           className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                           onClick={() => setShowPassword(!showPassword)}
+                          disabled={isLoading}
                         >
                           {showPassword ? (
                             <EyeOff className="h-4 w-4" />
@@ -177,6 +250,9 @@ export const Login: React.FC = () => {
                           )}
                         </Button>
                       </div>
+                      {validationErrors.password && (
+                        <p className="text-sm text-destructive">{validationErrors.password}</p>
+                      )}
                     </div>
 
                     <Button 
@@ -184,7 +260,14 @@ export const Login: React.FC = () => {
                       className="w-full gradient-primary text-white"
                       disabled={isLoading}
                     >
-                      {isLoading ? 'Entrando...' : 'Entrar'}
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Entrando...
+                        </>
+                      ) : (
+                        'Entrar'
+                      )}
                     </Button>
                   </form>
                 </TabsContent>
@@ -199,8 +282,11 @@ export const Login: React.FC = () => {
                         placeholder="Seu nome"
                         value={registerForm.name}
                         onChange={(e) => setRegisterForm(prev => ({ ...prev, name: e.target.value }))}
-                        required
+                        disabled={isLoading}
                       />
+                      {validationErrors.name && (
+                        <p className="text-sm text-destructive">{validationErrors.name}</p>
+                      )}
                     </div>
                     
                     <div className="space-y-2">
@@ -211,8 +297,11 @@ export const Login: React.FC = () => {
                         placeholder="seu@email.com"
                         value={registerForm.email}
                         onChange={(e) => setRegisterForm(prev => ({ ...prev, email: e.target.value }))}
-                        required
+                        disabled={isLoading}
                       />
+                      {validationErrors.email && (
+                        <p className="text-sm text-destructive">{validationErrors.email}</p>
+                      )}
                     </div>
                     
                     <div className="space-y-2">
@@ -221,10 +310,10 @@ export const Login: React.FC = () => {
                         <Input
                           id="register-password"
                           type={showPassword ? "text" : "password"}
-                          placeholder="Sua senha"
+                          placeholder="Mínimo 8 caracteres"
                           value={registerForm.password}
                           onChange={(e) => setRegisterForm(prev => ({ ...prev, password: e.target.value }))}
-                          required
+                          disabled={isLoading}
                         />
                         <Button
                           type="button"
@@ -232,6 +321,7 @@ export const Login: React.FC = () => {
                           size="sm"
                           className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                           onClick={() => setShowPassword(!showPassword)}
+                          disabled={isLoading}
                         >
                           {showPassword ? (
                             <EyeOff className="h-4 w-4" />
@@ -240,6 +330,24 @@ export const Login: React.FC = () => {
                           )}
                         </Button>
                       </div>
+                      {validationErrors.password && (
+                        <p className="text-sm text-destructive">{validationErrors.password}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="register-confirm-password">Confirmar senha</Label>
+                      <Input
+                        id="register-confirm-password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Confirme sua senha"
+                        value={registerForm.confirmPassword}
+                        onChange={(e) => setRegisterForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                        disabled={isLoading}
+                      />
+                      {validationErrors.confirmPassword && (
+                        <p className="text-sm text-destructive">{validationErrors.confirmPassword}</p>
+                      )}
                     </div>
 
                     <Button 
@@ -247,7 +355,14 @@ export const Login: React.FC = () => {
                       className="w-full gradient-primary text-white"
                       disabled={isLoading}
                     >
-                      {isLoading ? 'Criando conta...' : 'Criar conta'}
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Criando conta...
+                        </>
+                      ) : (
+                        'Criar conta'
+                      )}
                     </Button>
                   </form>
                 </TabsContent>

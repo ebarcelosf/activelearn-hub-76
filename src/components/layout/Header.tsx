@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
-import { useBadgeContext } from '@/contexts/BadgeContext';
+import { useBadgeContextOptional } from '@/contexts/BadgeContext';
 import { Badge } from '@/components/ui/badge';
 
 interface HeaderProps {
@@ -21,7 +21,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onMenuClick, showMenuButton }) => {
   const { user, logout } = useAuth();
-  const { totalXP, level } = useBadgeContext();
+  const badgeContext = useBadgeContextOptional();
 
   if (!user) return null;
 
@@ -56,15 +56,19 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick, showMenuButton }) =
         {/* User Menu */}
         <div className="flex items-center gap-4">
           {/* XP Badge */}
-          <Badge variant="secondary" className="hidden sm:flex items-center gap-1">
-            <Trophy className="h-3 w-3" />
-            <span className="font-medium">{totalXP} XP</span>
-          </Badge>
+          {badgeContext && (
+            <Badge variant="secondary" className="hidden sm:flex items-center gap-1">
+              <Trophy className="h-3 w-3" />
+              <span className="font-medium">{badgeContext.totalXP} XP</span>
+            </Badge>
+          )}
 
           {/* Level Badge */}
-          <Badge className="hidden sm:flex items-center gap-1 gradient-primary text-white">
-            <span className="font-bold">Nível {level}</span>
-          </Badge>
+          {badgeContext && (
+            <Badge className="hidden sm:flex items-center gap-1 gradient-primary text-white">
+              <span className="font-bold">Nível {badgeContext.level}</span>
+            </Badge>
+          )}
 
           {/* User Dropdown */}
           <DropdownMenu>

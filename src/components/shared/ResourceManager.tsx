@@ -26,6 +26,7 @@ interface ResourceManagerProps {
   onRemove: (id: string) => void;
   title: string;
   description: string;
+  checkTrigger?: (trigger: string, data?: any) => void;
 }
 
 export const ResourceManager: React.FC<ResourceManagerProps> = ({
@@ -34,7 +35,8 @@ export const ResourceManager: React.FC<ResourceManagerProps> = ({
   onUpdate,
   onRemove,
   title,
-  description
+  description,
+  checkTrigger
 }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -80,6 +82,10 @@ export const ResourceManager: React.FC<ResourceManagerProps> = ({
     if (editingId) {
       onUpdate(editingId, resourceData);
       setEditingId(null);
+      // Trigger badge check after updating
+      if (checkTrigger) {
+        checkTrigger('multiple_resources_collected', { resourcesCount: resources.length });
+      }
     } else {
       const newResource: Resource = {
         id: uuidv4(),
@@ -88,6 +94,11 @@ export const ResourceManager: React.FC<ResourceManagerProps> = ({
       };
       onAdd(newResource);
       setIsAdding(false);
+      // Trigger badge check after adding new resource
+      if (checkTrigger) {
+        const newResourcesCount = resources.length + 1;
+        checkTrigger('multiple_resources_collected', { resourcesCount: newResourcesCount });
+      }
     }
 
     setFormData({ title: '', url: '', type: 'article', credibility: 3, notes: '', tags: '' });

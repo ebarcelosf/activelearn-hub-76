@@ -67,6 +67,9 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update, onPhaseTra
     // Trigger badge de conclusão da fase Engage
     checkTrigger('engage_completed');
     
+    // Trigger badge do início da investigação
+    checkTrigger('investigate_started');
+    
     // Transição automática para a próxima fase
     if (onPhaseTransition) {
       onPhaseTransition('investigate');

@@ -15,9 +15,10 @@ import { Lightbulb } from 'lucide-react';
 interface ActPaneProps {
   data: any;
   update: (field: string, value: any) => void;
+  onPhaseTransition?: (phase: string) => void;
 }
 
-export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
+export const ActPane: React.FC<ActPaneProps> = ({ data, update, onPhaseTransition }) => {
   const [activeSection, setActiveSection] = useState('solution-development');
   const badge = useBadgeContextOptional();
   const checkTrigger = badge?.checkTrigger ?? (() => {});
@@ -105,6 +106,11 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
     // Verificar se completou todo o ciclo CBL
     if (data.engageCompleted && data.investigateCompleted) {
       checkTrigger('cbl_cycle_completed');
+    }
+    
+    // Transição para fase de conclusão
+    if (onPhaseTransition) {
+      onPhaseTransition('completed');
     }
     
     // Mark all checklist items as done

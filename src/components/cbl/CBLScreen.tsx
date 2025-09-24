@@ -137,6 +137,7 @@ export const CBLScreen: React.FC = () => {
             <ActPane 
               data={currentProject} 
               update={handleUpdate}
+              onPhaseTransition={handlePhaseTransition}
             />
           )}
         </CardContent>

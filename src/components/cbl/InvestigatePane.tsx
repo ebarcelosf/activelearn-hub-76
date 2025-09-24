@@ -371,6 +371,7 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
               onRemove={removeResource}
               title=""
               description=""
+              checkTrigger={checkTrigger}
             />
           </div>
         )}

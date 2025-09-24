@@ -324,58 +324,9 @@ export const Settings: React.FC = () => {
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Label className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  Notificações por email
-                </Label>
+                <Label>Notificações de conquistas</Label>
                 <p className="text-sm text-muted-foreground">
-                  Receba atualizações importantes por email
-                </p>
-              </div>
-              <Switch
-                checked={user.settings.notifications.email}
-                onCheckedChange={(checked) => 
-                  handleSettingsUpdate({ 
-                    notifications: { 
-                      ...user.settings.notifications, 
-                      email: checked 
-                    } 
-                  })
-                }
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label className="flex items-center gap-2">
-                  <Bell className="h-4 w-4" />
-                  Notificações push
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  Receba notificações push no navegador
-                </p>
-              </div>
-              <Switch
-                checked={user.settings.notifications.push}
-                onCheckedChange={(checked) => 
-                  handleSettingsUpdate({ 
-                    notifications: { 
-                      ...user.settings.notifications, 
-                      push: checked 
-                    } 
-                  })
-                }
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label className="flex items-center gap-2">
-                  <BellOff className="h-4 w-4" />
-                  Notificações no app
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  Receba notificações dentro da aplicação
+                  Receba notificações ao desbloquear novas conquistas durante os projetos
                 </p>
               </div>
               <Switch
@@ -388,38 +339,8 @@ export const Settings: React.FC = () => {
                     } 
                   })
                 }
+                disabled={isLoading}
               />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Idioma */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Globe className="h-5 w-5" />
-              Idioma
-            </CardTitle>
-            <CardDescription>
-              Selecione o idioma da aplicação
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Label>Idioma da interface</Label>
-              <Select 
-                value={user.settings.language} 
-                onValueChange={(value) => handleSettingsUpdate({ language: value })}
-              >
-                <SelectTrigger className="w-full sm:w-[200px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
-                  <SelectItem value="en-US">English (US)</SelectItem>
-                  <SelectItem value="es-ES">Español</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </CardContent>
         </Card>

@@ -17,14 +17,14 @@ export interface BadgeTriggerData {
   shouldGrant?: boolean;
 }
 
-export function useBadges() {
+export function useBadges(storageKey: string = 'cbl_badges') {
   const [earnedBadges, setEarnedBadges] = useState<Badge[]>([]);
   const [recentBadge, setRecentBadge] = useState<Badge | null>(null);
   const [showNotification, setShowNotification] = useState(false);
 
   // Carregar badges salvos no localStorage
   useEffect(() => {
-    const savedData = localStorage.getItem('cbl_badges');
+    const savedData = localStorage.getItem(storageKey);
     if (savedData) {
       try {
         const badges = JSON.parse(savedData);
@@ -35,12 +35,12 @@ export function useBadges() {
         console.warn('Erro ao carregar badges do localStorage:', error);
       }
     }
-  }, []);
+  }, [storageKey]);
 
   // Salvar badges no localStorage sempre que mudarem
   useEffect(() => {
-    localStorage.setItem('cbl_badges', JSON.stringify(earnedBadges));
-  }, [earnedBadges]);
+    localStorage.setItem(storageKey, JSON.stringify(earnedBadges));
+  }, [earnedBadges, storageKey]);
 
   // IDs dos badges conquistados
   const earnedBadgeIds = useMemo(() => earnedBadges.map(badge => badge.id), [earnedBadges]);

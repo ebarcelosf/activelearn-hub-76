@@ -45,6 +45,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
     } else {
       setProjects([]);
+      setCurrentProject(null); // Limpar projeto atual quando usuário deslogar
     }
   }, [user, setProjects]);
 

@@ -268,15 +268,6 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
                 <div className="font-semibold text-lg text-foreground">Prototypes</div>
                 <div className="text-muted-foreground text-sm mt-1">Crie e teste protótipos da sua solução</div>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => openNudgeModal('Act', 'Prototypes')}
-                className="flex items-center gap-1 text-xs"
-              >
-                <Lightbulb className="h-3 w-3" />
-                Obter Nudges
-              </Button>
             </div>
             <PrototypeManager
               prototypes={data.prototypes || []}

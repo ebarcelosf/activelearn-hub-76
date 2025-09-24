@@ -28,7 +28,7 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
   const { user } = useAuth();
   const storageKey = user ? getUserDataKey(user.id, 'badges') : 'earned_badges_temp';
   const [earnedBadges, setEarnedBadges] = useLocalStorage<Badge[]>(storageKey, []);
-  const badgeState = useBadges();
+  const badgeState = useBadges(storageKey);
 
   // Reset badges when user changes
   React.useEffect(() => {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ChecklistEditorCard } from '@/components/shared/ChecklistEditorCard';
-import { useBadgeContext } from '@/contexts/BadgeContext';
+import { useBadgeContextOptional } from '@/contexts/BadgeContext';
 import { useNudges } from '@/hooks/useNudges';
 import { NudgeModal } from '@/components/shared/NudgeModal';
 import { Button } from '@/components/ui/button';
@@ -18,7 +18,8 @@ interface EngagePaneProps {
 
 export const EngagePane: React.FC<EngagePaneProps> = ({ data, update, onPhaseTransition }) => {
   const [activeSection, setActiveSection] = useState('big-ideas');
-  const { checkTrigger } = useBadgeContext();
+  const badge = useBadgeContextOptional();
+  const checkTrigger = badge?.checkTrigger ?? (() => {});
   const { isModalOpen, currentCategory, currentPhase, openNudgeModal, closeModal } = useNudges();
 
   const setField = (field: string, value: string) => {

@@ -4,7 +4,7 @@ import { ImplementationManager } from '@/components/shared/ImplementationManager
 import { EvaluationManager } from '@/components/shared/EvaluationManager';
 import { PrototypeManager } from '@/components/shared/PrototypeManager';
 import { ChecklistEditorCard } from '@/components/shared/ChecklistEditorCard';
-import { useBadgeContext } from '@/contexts/BadgeContext';
+import { useBadgeContextOptional } from '@/contexts/BadgeContext';
 import { useNudges } from '@/hooks/useNudges';
 import { NudgeModal } from '@/components/shared/NudgeModal';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,8 @@ interface ActPaneProps {
 
 export const ActPane: React.FC<ActPaneProps> = ({ data, update }) => {
   const [activeSection, setActiveSection] = useState('solution-development');
-  const { checkTrigger } = useBadgeContext();
+  const badge = useBadgeContextOptional();
+  const checkTrigger = badge?.checkTrigger ?? (() => {});
   const { isModalOpen, currentCategory, currentPhase, openNudgeModal, closeModal } = useNudges();
 
   // Atualizar dados da solução

@@ -4,7 +4,7 @@ import { ActivityManager } from '@/components/shared/ActivityManager';
 import { ResourceManager } from '@/components/shared/ResourceManager';
 import { SynthesisManager } from '@/components/shared/SynthesisManager';
 import { ChecklistEditorCard } from '@/components/shared/ChecklistEditorCard';
-import { useBadgeContext } from '@/contexts/BadgeContext';
+import { useBadgeContextOptional } from '@/contexts/BadgeContext';
 import { useNudges } from '@/hooks/useNudges';
 import { NudgeModal } from '@/components/shared/NudgeModal';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,8 @@ interface InvestigatePaneProps {
 
 export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update }) => {
   const [activeSection, setActiveSection] = useState('guiding-questions');
-  const { checkTrigger } = useBadgeContext();
+  const badge = useBadgeContextOptional();
+  const checkTrigger = badge?.checkTrigger ?? (() => {});
   const { isModalOpen, currentCategory, currentPhase, openNudgeModal, closeModal } = useNudges();
 
   function setAnswer(idx: number, text: string) {

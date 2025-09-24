@@ -1,6 +1,6 @@
 // hooks/useNudges.ts
 import { useState, useCallback } from 'react';
-import { useBadgeContext } from '@/contexts/BadgeContext';
+import { useBadgeContextOptional } from '@/contexts/BadgeContext';
 
 type Phase = 'Engage' | 'Investigate' | 'Act';
 
@@ -8,7 +8,8 @@ export function useNudges() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCategory, setCurrentCategory] = useState<string>('');
   const [currentPhase, setCurrentPhase] = useState<Phase>('Engage');
-  const { checkTrigger } = useBadgeContext();
+  const badge = useBadgeContextOptional();
+  const checkTrigger = badge?.checkTrigger ?? (() => {});
 
   const openNudgeModal = useCallback((phase: Phase, category: string) => {
     console.log('Opening nudge modal for:', phase, category);

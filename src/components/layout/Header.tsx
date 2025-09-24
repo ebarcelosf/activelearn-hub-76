@@ -55,21 +55,6 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick, showMenuButton }) =
 
         {/* User Menu */}
         <div className="flex items-center gap-4">
-          {/* XP Badge */}
-          {badgeContext && (
-            <Badge variant="secondary" className="hidden sm:flex items-center gap-1">
-              <Trophy className="h-3 w-3" />
-              <span className="font-medium">{badgeContext.totalXP} XP</span>
-            </Badge>
-          )}
-
-          {/* Level Badge */}
-          {badgeContext && (
-            <Badge className="hidden sm:flex items-center gap-1 gradient-primary text-white">
-              <span className="font-bold">Nível {badgeContext.level}</span>
-            </Badge>
-          )}
-
           {/* User Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -98,14 +83,9 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick, showMenuButton }) =
                 <Trophy className="mr-2 h-4 w-4" />
                 <span>Conquistas</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => window.location.href = '/settings'}>
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Configurações</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={logout}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Sair</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -50,12 +50,14 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, [user, setProjects]);
 
   const createProject = (title: string, description: string): Project => {
+    const now = Date.now();
     const newProject: Project = {
       id: uuidv4(),
       title,
       description,
       createdAt: new Date(),
       updatedAt: new Date(),
+      lastModified: now,
       phase: 'engage',
       progress: 0,
       engageCompleted: false,
@@ -71,7 +73,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const updateProject = (projectId: string, updates: Partial<Project>) => {
     const updatedProject = projects.find(p => p.id === projectId);
     if (updatedProject) {
-      const newProject = { ...updatedProject, ...updates, updatedAt: new Date() };
+      const newProject = { ...updatedProject, ...updates, updatedAt: new Date(), lastModified: Date.now() };
 
       // Disparar gatilhos de fase imediatamente quando a fase mudar
       if (updatedProject.phase !== newProject.phase && newProject.phase) {
@@ -121,7 +123,8 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       id: uuidv4(),
       title: `${projectToDuplicate.title} (Cópia)`,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      lastModified: Date.now()
     };
 
     setProjects(prev => [...prev, duplicatedProject]);

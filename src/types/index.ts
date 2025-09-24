@@ -32,6 +32,7 @@ export interface Project {
   description: string;
   createdAt: Date;
   updatedAt: Date;
+  lastModified: number;
   phase: 'engage' | 'investigate' | 'act';
   progress: number;
 

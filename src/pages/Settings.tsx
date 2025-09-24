@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
-import { User, Settings as SettingsIcon, Moon, Sun, Monitor, Trash2, Mail, Bell, BellOff, Globe, Shield, Loader2 } from 'lucide-react';
+import { User, Settings as SettingsIcon, Moon, Sun, Monitor, Trash2, Mail, Bell, BellOff, Globe, Shield, Loader2, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const Settings: React.FC = () => {
@@ -347,6 +347,29 @@ export const Settings: React.FC = () => {
                 disabled={isLoading}
               />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Conta */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Conta
+            </CardTitle>
+            <CardDescription>
+              Gerencie sua sessão e conta
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              variant="outline" 
+              onClick={logout}
+              className="w-full sm:w-auto"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sair da conta
+            </Button>
           </CardContent>
         </Card>
 

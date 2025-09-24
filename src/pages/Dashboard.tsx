@@ -65,19 +65,10 @@ export const Dashboard: React.FC = () => {
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {lastModifiedProject ? (
-              <>
-                <div className="text-2xl font-bold mb-1">{lastModifiedProject.title}</div>
-                <p className="text-sm text-muted-foreground">
-                  {new Date(lastModifiedProject.lastModified).toLocaleDateString('pt-BR')}
-                </p>
-              </>
-            ) : (
-              <>
-                <div className="text-2xl font-bold mb-1">Nenhum projeto</div>
-                <p className="text-sm text-muted-foreground">-</p>
-              </>
-            )}
+            <div className="text-2xl font-bold">{projects.length}</div>
+            <p className="text-xs text-muted-foreground">
+              {lastModifiedProject ? lastModifiedProject.title : 'Nenhum projeto'}
+            </p>
           </CardContent>
         </Card>
 
@@ -108,59 +99,111 @@ export const Dashboard: React.FC = () => {
         </Card>
       </motion.div>
 
-      {/* Create Project Button */}
+      {/* Projects Section */}
       <motion.div
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="flex justify-center"
+        className="space-y-6"
       >
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="gradient-primary text-white">
-              <Plus className="mr-2 h-4 w-4" />
-              Novo Projeto
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Criar Novo Projeto</DialogTitle>
-              <DialogDescription>
-                Inicie um novo projeto de Aprendizagem Baseada em Desafios
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleCreateProject} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Título do Projeto</Label>
-                <Input
-                  id="title"
-                  placeholder="Ex: Redução do desperdício alimentar na escola"
-                  value={newProject.title}
-                  onChange={(e) => setNewProject(prev => ({ ...prev, title: e.target.value }))}
-                  required
-                />
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold">Projetos Ativos</h2>
+            <p className="text-muted-foreground">
+              Gerencie e acompanhe seus projetos CBL em andamento
+            </p>
+          </div>
+
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="gradient-primary text-white">
+                <Plus className="mr-2 h-4 w-4" />
+                Novo Projeto
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Criar Novo Projeto</DialogTitle>
+                <DialogDescription>
+                  Inicie um novo projeto de Aprendizagem Baseada em Desafios
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleCreateProject} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Título do Projeto</Label>
+                  <Input
+                    id="title"
+                    placeholder="Ex: Redução do desperdício alimentar na escola"
+                    value={newProject.title}
+                    onChange={(e) => setNewProject(prev => ({ ...prev, title: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description">Descrição</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Descreva brevemente o objetivo e contexto do projeto..."
+                    value={newProject.description}
+                    onChange={(e) => setNewProject(prev => ({ ...prev, description: e.target.value }))}
+                    rows={3}
+                  />
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" className="gradient-primary text-white">
+                    Criar Projeto
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Active Projects Grid */}
+        {activeProjects.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {activeProjects.map((project, index) => (
+              <motion.div
+                key={project.id}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1 * index }}
+              >
+                <ProjectCard project={project} />
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-center py-12"
+          >
+            <div className="mx-auto max-w-md">
+              <div className="mb-6">
+                <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+                  <BookOpen className="h-8 w-8 text-muted-foreground" />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Descrição</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Descreva brevemente o objetivo e contexto do projeto..."
-                  value={newProject.description}
-                  onChange={(e) => setNewProject(prev => ({ ...prev, description: e.target.value }))}
-                  rows={3}
-                />
-              </div>
-              <div className="flex justify-end space-x-2">
-                <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                  Cancelar
-                </Button>
-                <Button type="submit" className="gradient-primary text-white">
-                  Criar Projeto
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+              <h3 className="text-lg font-semibold mb-2">Nenhum projeto ativo</h3>
+              <p className="text-muted-foreground mb-6">
+                {projects.length > 0 ? 'Todos os projetos foram concluídos!' : 'Crie seu primeiro projeto CBL e comece sua jornada de aprendizagem'}
+              </p>
+              <Button 
+                onClick={() => setIsCreateDialogOpen(true)}
+                className="gradient-primary text-white"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                {projects.length > 0 ? 'Criar Novo Projeto' : 'Criar Primeiro Projeto'}
+              </Button>
+            </div>
+          </motion.div>
+        )}
+
       </motion.div>
     </div>
   );

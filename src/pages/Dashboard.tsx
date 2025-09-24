@@ -57,7 +57,7 @@ export const Dashboard: React.FC = () => {
         initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
       >
         <Card className="interactive-scale">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -65,22 +65,11 @@ export const Dashboard: React.FC = () => {
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{projects.length}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-2xl font-bold">
               {lastModifiedProject ? lastModifiedProject.title : 'Nenhum projeto'}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="interactive-scale">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Projetos Ativos</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{activeProjects.length}</div>
+            </div>
             <p className="text-xs text-muted-foreground">
-              {activeProjects.length > 0 ? 'Em andamento' : 'Nenhum projeto ativo'}
+              {lastModifiedProject ? new Date(lastModifiedProject.lastModified).toLocaleDateString('pt-BR') : ''}
             </p>
           </CardContent>
         </Card>

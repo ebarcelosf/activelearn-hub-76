@@ -217,11 +217,6 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
           grantBadge('analista');
         }
         break;
-      case 'multiple_resources_collected':
-        if (data.resourcesCount && data.resourcesCount >= 3 && canEarnBadge('bibliotecario')) {
-          grantBadge('bibliotecario');
-        }
-        break;
       case 'activity_created':
         if (canEarnBadge('planejador')) grantBadge('planejador');
         break;

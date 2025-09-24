@@ -120,16 +120,6 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     trigger: 'resources_added',
     rarity: 'common'
   },
-  bibliotecario: { 
-    id: 'bibliotecario', 
-    title: 'Bibliotecário', 
-    desc: 'Coletou 3 recursos de pesquisa', 
-    xp: 50, 
-    icon: 'Library', 
-    category: BADGE_CATEGORIES.INVESTIGACAO,
-    trigger: 'multiple_resources_collected',
-    rarity: 'uncommon'
-  },
 
   // BADGES DE ACT
   planejador: { 
@@ -180,7 +170,7 @@ export const ALL_BADGES: Record<string, BadgeDefinition> = {
     id: 'mestre_cbl', 
     title: 'Mestre CBL', 
     desc: 'Completou todo o ciclo CBL', 
-    xp: 150, 
+    xp: 200, 
     icon: 'Trophy', 
     category: BADGE_CATEGORIES.MAESTRIA,
     trigger: 'cbl_cycle_completed',

@@ -61,8 +61,8 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick, showMenuButton }) =
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="gradient-primary text-white font-medium">
-                    {user.name.split(' ').map(n => n[0]).join('')}
+                  <AvatarFallback className="gradient-primary text-white font-medium text-xs">
+                    {user.name}
                   </AvatarFallback>
                 </Avatar>
               </Button>

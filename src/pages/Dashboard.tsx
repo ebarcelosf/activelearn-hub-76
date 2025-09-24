@@ -30,14 +30,15 @@ export const Dashboard: React.FC = () => {
 
   // Calculate real-time project metrics
   const activeProjects = projects.filter(p => p.progress < 100);
-  const completedProjectsList = projects.filter(p => p.progress === 100);
+  const completedProjectsList = projects.filter(p => p.progress === 100 || 
+    (p.engageCompleted && p.investigateCompleted && p.actCompleted));
   const lastModifiedProject = projects.length > 0 
     ? projects.reduce((latest, current) => 
         current.lastModified > latest.lastModified ? current : latest
       )
     : null;
-  const averageProgress = activeProjects.length > 0 
-    ? Math.round(activeProjects.reduce((acc, p) => acc + p.progress, 0) / activeProjects.length)
+  const averageProgress = projects.length > 0 
+    ? Math.round(projects.reduce((acc, p) => acc + p.progress, 0) / projects.length)
     : 0;
 
   return (

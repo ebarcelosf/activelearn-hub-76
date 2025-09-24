@@ -155,21 +155,6 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
   const checkProjectBadges = useCallback((project: Project) => {
     if (!project) return;
 
-    // Big Idea badge
-    if (project.bigIdea && project.bigIdea.trim() && canEarnBadge('primeiro_passo')) {
-      grantBadge('primeiro_passo');
-    }
-
-    // Essential Question badge
-    if (project.essentialQuestion && project.essentialQuestion.trim() && canEarnBadge('questionador')) {
-      grantBadge('questionador');
-    }
-
-    // Challenge badge
-    if (project.challenge && project.challenge.trim() && canEarnBadge('desafiador')) {
-      grantBadge('desafiador');
-    }
-
     // Engage completed badge
     if (project.bigIdea && project.essentialQuestion && project.challenge && project.challenge.trim() &&
         canEarnBadge('visionario')) {
@@ -177,7 +162,7 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
     }
 
     // Investigate badges - answered questions
-    const answeredCount = project.answers ? project.answers.filter(a => a.a && a.a.trim()).length : 0;
+    const answeredCount = project.answers ? project.answers.filter(a => a && a.a && a.a.trim()).length : 0;
     
     if (answeredCount > 0 && canEarnBadge('investigador_iniciante')) {
       grantBadge('investigador_iniciante');
@@ -186,10 +171,6 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
     if (answeredCount >= 3 && canEarnBadge('pesquisador')) {
       grantBadge('pesquisador');
     }
-    
-    if (answeredCount >= 5 && canEarnBadge('analista')) {
-      grantBadge('analista');
-    }
 
     // Resources badges
     const resourcesCount = project.resources ? project.resources.length : 0;
@@ -197,50 +178,55 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
     if (resourcesCount > 0 && canEarnBadge('coletor')) {
       grantBadge('coletor');
     }
-    
-    if (resourcesCount >= 3 && canEarnBadge('bibliotecario')) {
-      grantBadge('bibliotecario');
-    }
-
-    // Activities badge
-    const activitiesCount = project.activities ? project.activities.length : 0;
-    
-    if (activitiesCount > 0 && canEarnBadge('planejador')) {
-      grantBadge('planejador');
-    }
-
-    // Prototypes badges
-    const prototypesCount = project.prototypes ? project.prototypes.length : 0;
-    
-    if (prototypesCount > 0 && canEarnBadge('criador')) {
-      grantBadge('criador');
-    }
-    
-    if (prototypesCount >= 3 && canEarnBadge('inovador')) {
-      grantBadge('inovador');
-    }
 
     // Act completed badge
     const hasSolution = !!(project.solution?.description && project.solution.description.trim());
     const hasImplementation = !!(project.implementation?.overview && project.implementation.overview.trim());
+    const prototypesCount = project.prototypes ? project.prototypes.length : 0;
     if (hasSolution && hasImplementation && prototypesCount > 0 && canEarnBadge('implementador')) {
       grantBadge('implementador');
-    }
-
-    // Master CBL badge
-    const allPhasesCompleted = !!(project.engageCompleted && project.investigateCompleted && project.actCompleted);
-    if (allPhasesCompleted && canEarnBadge('mestre_cbl')) {
-      grantBadge('mestre_cbl');
-    } else if (project.bigIdea && project.essentialQuestion && project.challenge &&
-        answeredCount >= 3 && resourcesCount >= 1 && activitiesCount >= 1 &&
-        hasSolution && hasImplementation && prototypesCount > 0 && canEarnBadge('mestre_cbl')) {
-      grantBadge('mestre_cbl');
     }
   }, [canEarnBadge, grantBadge]);
 
   // Função para verificar triggers específicos
   const checkTrigger = useCallback((trigger: string, data: BadgeTriggerData = {}) => {
     switch (trigger) {
+      case 'big_idea_created':
+        if (canEarnBadge('primeiro_passo')) grantBadge('primeiro_passo');
+        break;
+      case 'essential_question_created':
+        if (canEarnBadge('questionador')) grantBadge('questionador');
+        break;
+      case 'challenge_defined':
+        if (canEarnBadge('desafiador')) grantBadge('desafiador');
+        break;
+      case 'investigate_started':
+        if (canEarnBadge('investigador')) grantBadge('investigador');
+        break;
+      case 'questions_answered_5':
+        if (data.questionsAnswered && data.questionsAnswered >= 5 && canEarnBadge('analista')) {
+          grantBadge('analista');
+        }
+        break;
+      case 'multiple_resources_collected':
+        if (data.resourcesCount && data.resourcesCount >= 3 && canEarnBadge('bibliotecario')) {
+          grantBadge('bibliotecario');
+        }
+        break;
+      case 'activity_created':
+        if (canEarnBadge('planejador')) grantBadge('planejador');
+        break;
+      case 'prototype_created':
+        if (canEarnBadge('criador')) grantBadge('criador');
+        break;
+      case 'multiple_prototypes_created':
+        if (data.prototypesCount && data.prototypesCount >= 3 && canEarnBadge('inovador')) {
+          grantBadge('inovador');
+        }
+        break;
+      case 'cbl_cycle_completed':
+        if (canEarnBadge('mestre_cbl')) grantBadge('mestre_cbl');
+        break;
       case 'nudge_obtained':
         if (canEarnBadge('inspirado')) grantBadge('inspirado');
         break;
@@ -263,16 +249,8 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
           grantBadge('coletor');
         }
         break;
-      case 'multiple_resources_collected':
-        if ((data.resourcesCount ?? 0) >= 3 && canEarnBadge('bibliotecario')) {
-          grantBadge('bibliotecario');
-        }
-        break;
       case 'act_completed':
         if (canEarnBadge('implementador')) grantBadge('implementador');
-        break;
-      case 'cbl_cycle_completed':
-        if (canEarnBadge('mestre_cbl')) grantBadge('mestre_cbl');
         break;
       default:
         break;

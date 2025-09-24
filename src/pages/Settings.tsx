@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,11 +15,12 @@ import { useNavigate } from 'react-router-dom';
 
 export const Settings: React.FC = () => {
   const navigate = useNavigate();
+  const { settings, updateSettings } = useSettings();
   const { 
     user, 
     updateProfile, 
     updatePassword, 
-    updateSettings, 
+    updateSettings: updateAuthSettings, 
     deleteAccount, 
     logout,
     isLoading,
@@ -90,13 +92,21 @@ export const Settings: React.FC = () => {
   };
 
   const handleSettingsUpdate = async (updates: any) => {
-    const success = await updateSettings(updates);
+    const success = await updateAuthSettings(updates);
     if (success) {
       toast({
         title: "Configurações atualizadas",
         description: "Suas preferências foram salvas."
       });
     }
+  };
+
+  const handleBadgeSettingsUpdate = (updates: any) => {
+    updateSettings(updates);
+    toast({
+      title: "Configurações atualizadas",
+      description: "Suas preferências de badge foram salvas."
+    });
   };
 
   const handleDeleteAccount = async () => {
@@ -279,8 +289,8 @@ export const Settings: React.FC = () => {
             <div className="space-y-2">
               <Label>Tema</Label>
               <Select 
-                value={user.settings.theme} 
-                onValueChange={(value) => handleSettingsUpdate({ theme: value })}
+                value={settings.theme} 
+                onValueChange={(value) => updateSettings({ theme: value as 'light' | 'dark' | 'system' })}
               >
                 <SelectTrigger className="w-full sm:w-[200px]">
                   <SelectValue />
@@ -326,18 +336,13 @@ export const Settings: React.FC = () => {
               <div className="space-y-1">
                 <Label>Notificações de conquistas</Label>
                 <p className="text-sm text-muted-foreground">
-                  Receba notificações ao desbloquear novas conquistas durante os projetos
+                  Receba notificações pop-up ao desbloquear novas conquistas durante os projetos
                 </p>
               </div>
               <Switch
-                checked={user.settings.notifications.inApp}
+                checked={settings.showBadgeNotifications}
                 onCheckedChange={(checked) => 
-                  handleSettingsUpdate({ 
-                    notifications: { 
-                      ...user.settings.notifications, 
-                      inApp: checked 
-                    } 
-                  })
+                  handleBadgeSettingsUpdate({ showBadgeNotifications: checked })
                 }
                 disabled={isLoading}
               />

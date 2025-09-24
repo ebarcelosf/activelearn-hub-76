@@ -4,6 +4,7 @@ import { EngagePane } from './EngagePane';
 import { InvestigatePane } from './InvestigatePane';
 import { ActPane } from './ActPane';
 import { useProjects } from '@/contexts/ProjectContext';
+import { useBadgeContextOptional } from '@/contexts/BadgeContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -13,6 +14,8 @@ export const CBLScreen: React.FC = () => {
   const { currentProject, updateProject, getProjectProgress } = useProjects();
   const { phase } = useParams<{ phase: string }>();
   const navigate = useNavigate();
+  const badge = useBadgeContextOptional();
+  const checkTrigger = badge?.checkTrigger ?? (() => {});
   
   const currentPhase = phase || 'engage';
 
@@ -22,7 +25,26 @@ export const CBLScreen: React.FC = () => {
     if (currentProject.phase !== currentPhase) {
       updateProject(currentProject.id, { phase: currentPhase as 'engage' | 'investigate' | 'act' });
     }
-  }, [currentPhase, currentProject?.id]);
+    
+    // Trigger badge quando entra na fase investigate pela primeira vez
+    if (currentPhase === 'investigate') {
+      checkTrigger('investigate_started');
+    }
+  }, [currentPhase, currentProject?.id, checkTrigger]);
+
+  // Monitor project completion for Mestre CBL badge
+  React.useEffect(() => {
+    if (!currentProject) return;
+    
+    const isEngageComplete = !!(currentProject.bigIdea && currentProject.essentialQuestion);
+    const isInvestigateComplete = !!(currentProject.answers && currentProject.answers.filter(a => a && a.a && a.a.trim()).length >= 3);
+    const isActComplete = !!(currentProject.solution?.description && currentProject.implementation?.overview && currentProject.prototypes?.length > 0);
+    
+    // Check for Mestre CBL when all phases are genuinely complete
+    if (isEngageComplete && isInvestigateComplete && isActComplete) {
+      checkTrigger('cbl_cycle_completed');
+    }
+  }, [currentProject, checkTrigger]);
 
   if (!currentProject) {
     return (

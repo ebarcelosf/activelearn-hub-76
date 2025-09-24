@@ -103,11 +103,6 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update, onPhaseTransitio
     // Trigger badges de conclusão
     checkTrigger('act_completed');
     
-    // Verificar se completou todo o ciclo CBL
-    if (data.engageCompleted && data.investigateCompleted) {
-      checkTrigger('cbl_cycle_completed');
-    }
-    
     // Transição para fase de conclusão
     if (onPhaseTransition) {
       onPhaseTransition('completed');

@@ -201,7 +201,16 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
         if (canEarnBadge('desafiador')) grantBadge('desafiador');
         break;
       case 'investigate_started':
+        // Badge "Investigador" quando entra na fase Investigate
         if (canEarnBadge('investigador')) grantBadge('investigador');
+        // Badge introdutório também
+        if (canEarnBadge('investigador_iniciante')) grantBadge('investigador_iniciante');
+        break;
+      case 'questions_answered_3':
+        // Badge "Pesquisador" quando responde 3 perguntas
+        if (data.questionsAnswered && data.questionsAnswered >= 3 && canEarnBadge('pesquisador')) {
+          grantBadge('pesquisador');
+        }
         break;
       case 'questions_answered_5':
         if (data.questionsAnswered && data.questionsAnswered >= 5 && canEarnBadge('analista')) {
@@ -230,19 +239,9 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
       case 'nudge_obtained':
         if (canEarnBadge('inspirado')) grantBadge('inspirado');
         break;
-      case 'investigate_started':
-        // Ao iniciar a fase Investigate, conceder badge introdutório
-        if (canEarnBadge('investigador_iniciante')) grantBadge('investigador_iniciante');
-        break;
       case 'engage_completed':
-        // Conceder badge "Visionário" quando Engage completo (também coberto por checkProjectBadges)
+        // Conceder badge "Visionário" quando Engage completo
         if (canEarnBadge('visionario')) grantBadge('visionario');
-        break;
-      case 'investigate_completed':
-        // Progrediu bem na investigação; conceder "pesquisador" se tiver 3+ respostas
-        if (data.questionsAnswered && data.questionsAnswered >= 3 && canEarnBadge('pesquisador')) {
-          grantBadge('pesquisador');
-        }
         break;
       case 'resources_added':
         if ((data.resourcesCount ?? 0) >= 1 && canEarnBadge('coletor')) {

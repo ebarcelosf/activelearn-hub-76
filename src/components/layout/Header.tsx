@@ -53,42 +53,11 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick, showMenuButton }) =
           </motion.div>
         </div>
 
-        {/* User Menu */}
-        <div className="flex items-center gap-4">
-          {/* User Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="gradient-primary text-white font-medium text-xs">
-                    {user.name}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-              <div className="flex flex-col space-y-1 p-2">
-                <p className="text-sm font-medium leading-none">{user.name}</p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  {user.email}
-                </p>
-              </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                <span>Perfil</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Trophy className="mr-2 h-4 w-4" />
-                <span>Conquistas</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => window.location.href = '/settings'}>
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Configurações</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        {/* User Name */}
+        <div className="flex items-center">
+          <span className="text-sm font-medium text-foreground">
+            {user.name}
+          </span>
         </div>
       </div>
     </motion.header>

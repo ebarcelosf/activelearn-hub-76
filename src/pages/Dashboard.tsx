@@ -30,16 +30,11 @@ export const Dashboard: React.FC = () => {
 
   // Calculate real-time project metrics
   const activeProjects = projects.filter(p => p.progress < 100);
-  const completedProjectsList = projects.filter(p => p.progress === 100 || 
-    (p.engageCompleted && p.investigateCompleted && p.actCompleted));
   const lastModifiedProject = projects.length > 0 
     ? projects.reduce((latest, current) => 
         current.lastModified > latest.lastModified ? current : latest
       )
     : null;
-  const averageProgress = projects.length > 0 
-    ? Math.round(projects.reduce((acc, p) => acc + p.progress, 0) / projects.length)
-    : 0;
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
@@ -62,7 +57,7 @@ export const Dashboard: React.FC = () => {
         initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-4 gap-6"
+        className="grid grid-cols-1 md:grid-cols-3 gap-6"
       >
         <Card className="interactive-scale">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -79,26 +74,13 @@ export const Dashboard: React.FC = () => {
 
         <Card className="interactive-scale">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Projetos Concluídos</CardTitle>
-            <Trophy className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{completedProjectsList.length}</div>
-            <p className="text-xs text-muted-foreground">
-              {projects.length > 0 ? Math.round((completedProjectsList.length / projects.length) * 100) : 0}% de conclusão
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="interactive-scale">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Progresso Médio</CardTitle>
+            <CardTitle className="text-sm font-medium">Projetos Ativos</CardTitle>
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{averageProgress}%</div>
+            <div className="text-2xl font-bold">{activeProjects.length}</div>
             <p className="text-xs text-muted-foreground">
-              {activeProjects.length > 0 ? 'Projetos ativos' : 'Nenhum projeto ativo'}
+              {activeProjects.length > 0 ? 'Em andamento' : 'Nenhum projeto ativo'}
             </p>
           </CardContent>
         </Card>
@@ -222,35 +204,6 @@ export const Dashboard: React.FC = () => {
           </motion.div>
         )}
 
-        {/* Completed Projects Section */}
-        {completedProjectsList.length > 0 && (
-          <motion.div
-            initial={{ y: 40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="space-y-6 mt-12"
-          >
-            <div>
-              <h2 className="text-2xl font-bold">Projetos Concluídos</h2>
-              <p className="text-muted-foreground">
-                Seus projetos CBL finalizados com sucesso
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {completedProjectsList.map((project, index) => (
-                <motion.div
-                  key={project.id}
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.1 * index }}
-                >
-                  <ProjectCard project={project} />
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        )}
       </motion.div>
     </div>
   );

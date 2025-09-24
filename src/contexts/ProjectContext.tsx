@@ -155,7 +155,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (project.challenge && project.challenge.trim()) completedSections++;
     
     // Check answers
-    if (project.answers && project.answers.filter(a => a.a && a.a.trim()).length > 0) completedSections++;
+    if (project.answers && project.answers.filter(a => a && a.a && a.a.trim()).length > 0) completedSections++;
     
     // Check activities
     if (project.activities && project.activities.length > 0) completedSections++;

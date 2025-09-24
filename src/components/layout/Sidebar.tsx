@@ -52,8 +52,8 @@ const SidebarInner: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       path: `/project/${currentProject.id}/investigate`,
       phase: 'investigate' as const,
       description: 'Pesquisar e analisar',
-      status: currentProject.researchSynthesis ? 'completed' :
-              currentProject.guidingQuestions.length > 0 || currentProject.guidingActivities.length > 0 ? 'progress' : 'pending'
+      status: currentProject.synthesis?.mainFindings ? 'completed' :
+              (currentProject.answers && currentProject.answers.length > 0) || (currentProject.activities && currentProject.activities.length > 0) ? 'progress' : 'pending'
     },
     { 
       icon: Rocket, 
@@ -61,8 +61,8 @@ const SidebarInner: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       path: `/project/${currentProject.id}/act`,
       phase: 'act' as const,
       description: 'Desenvolver e implementar',
-      status: currentProject.solutionDevelopment && currentProject.prototypes.length > 0 ? 'completed' :
-              currentProject.solutionDevelopment || currentProject.implementationPlan.length > 0 ? 'progress' : 'pending'
+      status: currentProject.solution?.description && currentProject.prototypes.length > 0 ? 'completed' :
+              currentProject.solution?.description || currentProject.implementation?.overview ? 'progress' : 'pending'
     },
   ] : [];
 

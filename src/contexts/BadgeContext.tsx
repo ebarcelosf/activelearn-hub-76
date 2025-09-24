@@ -166,46 +166,33 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
     }
 
     // Challenge badge
-    if (((project.challenge && project.challenge.trim()) || (project.challenges && project.challenges.length > 0)) && canEarnBadge('desafiador')) {
+    if (project.challenge && project.challenge.trim() && canEarnBadge('desafiador')) {
       grantBadge('desafiador');
     }
 
     // Engage completed badge
-    if (project.bigIdea && project.essentialQuestion && 
-        ((project.challenge && project.challenge.trim()) || (project.challenges && project.challenges.length > 0)) &&
+    if (project.bigIdea && project.essentialQuestion && project.challenge && project.challenge.trim() &&
         canEarnBadge('visionario')) {
       grantBadge('visionario');
     }
 
-    // Investigate badges
-    const questionsCount = (project as any).investigate?.guidingQuestions
-      ? (project as any).investigate.guidingQuestions.length
-      : Array.isArray((project as any).guidingQuestions)
-        ? (project as any).guidingQuestions.length
-        : Array.isArray((project as any).questions)
-          ? (project as any).questions.length
-          : 0;
+    // Investigate badges - answered questions
+    const answeredCount = project.answers ? project.answers.filter(a => a.a && a.a.trim()).length : 0;
     
-    if (questionsCount > 0 && canEarnBadge('investigador_iniciante')) {
+    if (answeredCount > 0 && canEarnBadge('investigador_iniciante')) {
       grantBadge('investigador_iniciante');
     }
     
-    if (questionsCount >= 3 && canEarnBadge('pesquisador')) {
+    if (answeredCount >= 3 && canEarnBadge('pesquisador')) {
       grantBadge('pesquisador');
     }
     
-    if (questionsCount >= 5 && canEarnBadge('analista')) {
+    if (answeredCount >= 5 && canEarnBadge('analista')) {
       grantBadge('analista');
     }
 
     // Resources badges
-    const resourcesCount = (project as any).investigate?.resources
-      ? (project as any).investigate.resources.length
-      : Array.isArray((project as any).guidingResources)
-        ? (project as any).guidingResources.length
-        : Array.isArray((project as any).resources)
-          ? (project as any).resources.length
-          : 0;
+    const resourcesCount = project.resources ? project.resources.length : 0;
     
     if (resourcesCount > 0 && canEarnBadge('coletor')) {
       grantBadge('coletor');
@@ -216,13 +203,7 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
     }
 
     // Activities badge
-    const activitiesCount = (project as any).investigate?.activities
-      ? (project as any).investigate.activities.length
-      : Array.isArray((project as any).guidingActivities)
-        ? (project as any).guidingActivities.length
-        : Array.isArray((project as any).activities)
-          ? (project as any).activities.length
-          : 0;
+    const activitiesCount = project.activities ? project.activities.length : 0;
     
     if (activitiesCount > 0 && canEarnBadge('planejador')) {
       grantBadge('planejador');
@@ -239,22 +220,20 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
       grantBadge('inovador');
     }
 
-    // Act completed badge (considerando estruturas novas e antigas)
-    const hasSolution = !!(((project as any).solutionDevelopment && (project as any).solutionDevelopment.trim()) || (project as any).solution?.description);
-    const hasImplementation = !!((((project as any).implementationPlan && (project as any).implementationPlan.length > 0)) || (project as any).implementation?.overview);
+    // Act completed badge
+    const hasSolution = !!(project.solution?.description && project.solution.description.trim());
+    const hasImplementation = !!(project.implementation?.overview && project.implementation.overview.trim());
     if (hasSolution && hasImplementation && prototypesCount > 0 && canEarnBadge('implementador')) {
       grantBadge('implementador');
     }
 
     // Master CBL badge
-    const allPhasesCompleted = !!((project as any).engageCompleted && (project as any).investigateCompleted && (project as any).actCompleted);
+    const allPhasesCompleted = !!(project.engageCompleted && project.investigateCompleted && project.actCompleted);
     if (allPhasesCompleted && canEarnBadge('mestre_cbl')) {
       grantBadge('mestre_cbl');
-    } else if (project.bigIdea && project.essentialQuestion && 
-        ((project.challenge && project.challenge.trim()) || (project.challenges && project.challenges.length > 0)) &&
-        questionsCount >= 3 && resourcesCount >= 1 && activitiesCount >= 1 &&
-        project.solutionDevelopment && project.implementationPlan && 
-        project.implementationPlan.length > 0 && canEarnBadge('mestre_cbl')) {
+    } else if (project.bigIdea && project.essentialQuestion && project.challenge &&
+        answeredCount >= 3 && resourcesCount >= 1 && activitiesCount >= 1 &&
+        hasSolution && hasImplementation && prototypesCount > 0 && canEarnBadge('mestre_cbl')) {
       grantBadge('mestre_cbl');
     }
   }, [canEarnBadge, grantBadge]);

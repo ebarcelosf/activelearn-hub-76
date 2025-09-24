@@ -61,13 +61,6 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       engageCompleted: false,
       investigateCompleted: false,
       actCompleted: false,
-      challenges: [],
-      engageChecklist: [],
-      guidingQuestions: [],
-      guidingActivities: [],
-      guidingResources: [],
-      implementationPlan: [],
-      evaluationCriteria: [],
       prototypes: []
     };
 
@@ -140,13 +133,13 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       'bigIdea',
       'essentialQuestion', 
       'challenge',
-      'guidingQuestions',
-      'guidingActivities',
-      'guidingResources',
-      'researchSynthesis',
-      'solutionDevelopment',
-      'implementationPlan',
-      'evaluationCriteria',
+      'answers',
+      'activities',
+      'resources',
+      'synthesis',
+      'solution',
+      'implementation',
+      'evaluation',
       'prototypes'
     ];
     
@@ -159,28 +152,28 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (project.essentialQuestion && project.essentialQuestion.trim()) completedSections++;
     
     // Check challenge
-    if ((project.challenge && project.challenge.trim()) || (project.challenges && project.challenges.length > 0)) completedSections++;
+    if (project.challenge && project.challenge.trim()) completedSections++;
     
-    // Check guidingQuestions
-    if (project.guidingQuestions && project.guidingQuestions.length > 0) completedSections++;
+    // Check answers
+    if (project.answers && project.answers.filter(a => a.a && a.a.trim()).length > 0) completedSections++;
     
-    // Check guidingActivities
-    if (project.guidingActivities && project.guidingActivities.length > 0) completedSections++;
+    // Check activities
+    if (project.activities && project.activities.length > 0) completedSections++;
     
-    // Check guidingResources
-    if (project.guidingResources && project.guidingResources.length > 0) completedSections++;
+    // Check resources
+    if (project.resources && project.resources.length > 0) completedSections++;
     
-    // Check researchSynthesis
-    if (project.researchSynthesis && project.researchSynthesis.trim()) completedSections++;
+    // Check synthesis
+    if (project.synthesis?.mainFindings && project.synthesis.mainFindings.trim()) completedSections++;
     
-    // Check solutionDevelopment
-    if (project.solutionDevelopment && project.solutionDevelopment.trim()) completedSections++;
+    // Check solution
+    if (project.solution?.description && project.solution.description.trim()) completedSections++;
     
-    // Check implementationPlan
-    if (project.implementationPlan && project.implementationPlan.length > 0) completedSections++;
+    // Check implementation
+    if (project.implementation?.overview && project.implementation.overview.trim()) completedSections++;
     
-    // Check evaluationCriteria
-    if (project.evaluationCriteria && project.evaluationCriteria.length > 0) completedSections++;
+    // Check evaluation
+    if (project.evaluation?.objectives && project.evaluation.objectives.trim()) completedSections++;
     
     // Check prototypes
     if (project.prototypes && project.prototypes.length > 0) completedSections++;

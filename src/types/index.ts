@@ -40,34 +40,25 @@ export interface Project {
   investigateCompleted?: boolean;
   actCompleted?: boolean;
   
-  // Engage Phase
+  // Engage Phase (unified)
   bigIdea?: string;
   essentialQuestion?: string;
-  challenge?: string; // UI single challenge text
-  challenges: string[]; // legacy array
-  engageChecklist: ChecklistItem[]; // legacy checklist
-  engageChecklistItems?: ChecklistItem[]; // UI checklist específica do Engage
+  challenge?: string;
+  engageChecklistItems?: ChecklistItem[];
   
-  // Investigate Phase
-  guidingQuestions: GuidingQuestion[]; // legacy typed questions
-  answers?: { q: string; a: string }[]; // UI answers
-  activities?: Activity[]; // UI alias for guidingActivities
-  resources?: Resource[]; // UI alias for guidingResources
-  guidingActivities: Activity[]; // legacy
-  guidingResources: Resource[]; // legacy
-  researchSynthesis?: string; // legacy
-  synthesis?: { mainFindings?: string }; // UI synthesis
-  investigateChecklistItems?: ChecklistItem[]; // UI checklist específica do Investigate
+  // Investigate Phase (unified)
+  answers?: { q: string; a: string }[];
+  activities?: Activity[];
+  resources?: Resource[];
+  synthesis?: { mainFindings?: string };
+  investigateChecklistItems?: ChecklistItem[];
   
-  // Act Phase
-  solutionDevelopment?: string; // legacy
-  solution?: { description?: string }; // UI solution
-  implementationPlan: ImplementationStep[]; // legacy
-  implementation?: { overview?: string }; // UI implementation
-  evaluationCriteria: EvaluationMetric[]; // legacy
-  evaluation?: { objectives?: string }; // UI evaluation
+  // Act Phase (unified)
+  solution?: { description?: string };
+  implementation?: { overview?: string };
+  evaluation?: { objectives?: string };
   prototypes: Prototype[];
-  actChecklistItems?: ChecklistItem[]; // UI checklist específica do Act
+  actChecklistItems?: ChecklistItem[];
 }
 
 export interface ChecklistItem {

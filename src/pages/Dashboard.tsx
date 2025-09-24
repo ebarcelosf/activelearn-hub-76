@@ -10,12 +10,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { ProjectCard } from '@/components/common/ProjectCard';
 import { useProjects } from '@/contexts/ProjectContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { useBadgeContext } from '@/contexts/BadgeContext';
+import { useBadgeContextOptional } from '@/contexts/BadgeContext';
 
 export const Dashboard: React.FC = () => {
   const { projects, createProject } = useProjects();
   const { user } = useAuth();
-  const { totalXP, level } = useBadgeContext();
+  const badgeContext = useBadgeContextOptional();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newProject, setNewProject] = useState({ title: '', description: '' });
 
@@ -101,9 +101,9 @@ export const Dashboard: React.FC = () => {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalXP}</div>
+            <div className="text-2xl font-bold">{badgeContext?.totalXP ?? 0}</div>
             <p className="text-xs text-muted-foreground">
-              Nível {level}
+              Nível {badgeContext?.level ?? 1}
             </p>
           </CardContent>
         </Card>

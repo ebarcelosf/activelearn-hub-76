@@ -15,6 +15,7 @@ import { CBLProjectView } from "@/pages/CBLProjectView";
 import { Achievements } from "@/pages/Achievements";
 import { Settings } from "@/pages/Settings";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { BadgeNotificationToast } from "@/components/shared/BadgeNotificationToast";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -87,6 +88,7 @@ const App = () => (
             <TooltipProvider>
               <Toaster />
               <Sonner />
+              <BadgeNotificationToast />
               <BrowserRouter>
                 <AppRoutes />
               </BrowserRouter>

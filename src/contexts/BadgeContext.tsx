@@ -59,9 +59,16 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
   };
 
   const checkTrigger = (trigger: string, data?: any) => {
-    // Implementation for badge triggers based on actions
-    // This can be expanded based on specific badge requirements
     console.log('Badge trigger:', trigger, data);
+    
+    // Check which badges should be granted based on the trigger
+    const badgesToCheck = BADGE_LIST.filter(badge => badge.trigger === trigger);
+    
+    badgesToCheck.forEach(badge => {
+      if (canEarnBadge(badge.id)) {
+        grantBadge(badge.id);
+      }
+    });
   };
 
   const dismissNotification = () => {
@@ -69,7 +76,7 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
     setRecentBadge(null);
   };
 
-  const progressPercentage = Math.round((totalXP / 2000) * 100); // Assuming max XP is 2000
+  const progressPercentage = Math.round(((totalXP % 1000) / 1000) * 100); // Progress to next level
 
   const value: BadgeContextType = {
     earnedBadges,

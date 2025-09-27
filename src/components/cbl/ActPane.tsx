@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Lightbulb } from 'lucide-react';
 import { useChecklistItems } from '@/hooks/useChecklistItems';
+import { usePrototypes } from '@/hooks/usePrototypes';
 
 interface ActPaneProps {
   data: any;
@@ -43,31 +44,48 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update, onPhaseTransitio
     update('evaluation', evaluation);
   }
 
+  // Use prototypes hook for database operations
+  const { prototypes: dbPrototypes, addPrototype: addDbPrototype, updatePrototype: updateDbPrototype, deletePrototype: deleteDbPrototype } = usePrototypes(data.id);
+
   // Adicionar protótipo
   function addPrototype(prototype: any) {
-    const prototypes = [...(data.prototypes || []), prototype];
-    update('prototypes', prototypes);
+    // Save to database
+    addDbPrototype({
+      title: prototype.title,
+      description: prototype.description,
+      fidelity: prototype.fidelity,
+      test_results: prototype.testResults,
+      next_steps: prototype.nextSteps,
+      files: prototype.files || [],
+    });
     
-    // Trigger badges de protótipos
-    if (prototypes.length === 1) {
-      checkTrigger('prototype_created');
-    } else if (prototypes.length === 3) {
-      checkTrigger('multiple_prototypes_created', { prototypesCount: prototypes.length });
-    }
+    // Trigger badges de protótipos after a short delay to ensure the DB is updated
+    setTimeout(() => {
+      const totalPrototypes = dbPrototypes.length;
+      console.log('Total prototypes after add:', totalPrototypes);
+      if (totalPrototypes === 1) {
+        checkTrigger && checkTrigger('prototype_created');
+      } else if (totalPrototypes >= 3) {
+        checkTrigger && checkTrigger('multiple_prototypes_created', { prototypesCount: totalPrototypes });
+      }
+    }, 1000);
   }
 
   // Atualizar protótipo
   function updatePrototype(id: string, updatedData: any) {
-    const prototypes = (data.prototypes || []).map((p: any) => 
-      p.id === id ? { ...p, ...updatedData } : p
-    );
-    update('prototypes', prototypes);
+    updateDbPrototype(id, {
+      title: updatedData.title,
+      description: updatedData.description,
+      fidelity: updatedData.fidelity,
+      test_results: updatedData.testResults,
+      next_steps: updatedData.nextSteps,
+      files: updatedData.files || [],
+    });
   }
 
   // Remover protótipo
   function removePrototype(id: string) {
-    const prototypes = (data.prototypes || []).filter((p: any) => p.id !== id);
-    update('prototypes', prototypes);
+    deleteDbPrototype(id);
   }
 
   const {
@@ -80,7 +98,7 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update, onPhaseTransitio
   function markComplete() {
     // Verificar se todos os requisitos básicos foram atendidos
     const hasBasicSolution = !!(data.solution?.description || '').trim();
-    const hasPrototypes = (data.prototypes || []).length >= 1;
+  const hasPrototypes = dbPrototypes.length >= 1;
     const hasImplementationPlan = !!(data.implementation?.overview || '').trim();
     const hasEvaluationCriteria = !!(data.evaluation?.objectives || '').trim();
 
@@ -111,7 +129,7 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update, onPhaseTransitio
   const hasSolution = !!(data.solution?.description || '').trim();
   const hasImplementation = !!(data.implementation?.overview || '').trim();
   const hasEvaluation = !!(data.evaluation?.objectives || '').trim();
-  const hasPrototypes = (data.prototypes || []).length > 0;
+  const hasPrototypes = dbPrototypes.length > 0;
   const sectionsCompleted = [hasSolution, hasImplementation, hasEvaluation, hasPrototypes].filter(Boolean).length;
 
   const sections = [
@@ -266,7 +284,16 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update, onPhaseTransitio
               </div>
             </div>
             <PrototypeManager
-              prototypes={data.prototypes || []}
+              prototypes={dbPrototypes.map(p => ({
+                id: p.id,
+                title: p.title,
+                description: p.description || '',
+                fidelity: (p.fidelity as 'low' | 'medium' | 'high') || 'low',
+                testResults: p.test_results || '',
+                nextSteps: p.next_steps || '',
+                files: p.files || [],
+                createdAt: p.created_at
+              }))}
               onAdd={addPrototype}
               onUpdate={updatePrototype}
               onRemove={removePrototype}

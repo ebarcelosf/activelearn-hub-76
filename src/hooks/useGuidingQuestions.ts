@@ -64,8 +64,27 @@ export const useGuidingQuestions = (projectId: string) => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['guiding-questions', projectId] });
+      
+      // Trigger badge checks after answering questions
+      setTimeout(() => {
+        const answeredCount = questions.filter(q => q.answer && q.answer.trim()).length + 1;
+        
+        if (answeredCount === 3) {
+          // Trigger badge for 3 questions answered
+          window.dispatchEvent(new CustomEvent('badge-trigger', { 
+            detail: { trigger: 'questions_answered_3', data: { count: answeredCount } }
+          }));
+        }
+        
+        if (answeredCount === 5) {
+          // Trigger badge for 5 questions answered
+          window.dispatchEvent(new CustomEvent('badge-trigger', { 
+            detail: { trigger: 'questions_answered_5', data: { count: answeredCount } }
+          }));
+        }
+      }, 100);
     },
     onError: (error) => {
       console.error('Erro ao atualizar resposta:', error);

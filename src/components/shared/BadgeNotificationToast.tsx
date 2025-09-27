@@ -6,8 +6,21 @@ import { ALL_BADGES } from '@/utils/badgeConstants';
 export const BadgeNotificationToast: React.FC = () => {
   const badgeContext = useBadgeContextOptional();
 
+  // Check if notifications are enabled in settings
+  const [notificationSettings, setNotificationSettings] = React.useState(() => {
+    const saved = localStorage.getItem('notificationSettings');
+    return saved ? JSON.parse(saved) : { showBadgeNotifications: true };
+  });
+
   useEffect(() => {
-    if (badgeContext?.showNotification && badgeContext?.recentBadge) {
+    const settings = localStorage.getItem('notificationSettings');
+    if (settings) {
+      setNotificationSettings(JSON.parse(settings));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (badgeContext?.showNotification && badgeContext?.recentBadge && notificationSettings.showBadgeNotifications) {
       const badge = ALL_BADGES[badgeContext.recentBadge];
       
       if (badge) {
@@ -18,8 +31,11 @@ export const BadgeNotificationToast: React.FC = () => {
         
         badgeContext.dismissNotification();
       }
+    } else if (badgeContext?.showNotification && !notificationSettings.showBadgeNotifications) {
+      // Still dismiss the notification even if not showing
+      badgeContext.dismissNotification();
     }
-  }, [badgeContext?.showNotification, badgeContext?.recentBadge, badgeContext]);
+  }, [badgeContext?.showNotification, badgeContext?.recentBadge, badgeContext, notificationSettings.showBadgeNotifications]);
 
   return null;
 };

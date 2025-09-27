@@ -28,8 +28,9 @@ export const Settings: React.FC = () => {
     clearError
   } = useAuth();
   
-  const [notificationSettings, setNotificationSettings] = useState({
-    showBadgeNotifications: true,
+  const [notificationSettings, setNotificationSettings] = useState(() => {
+    const saved = localStorage.getItem('notificationSettings');
+    return saved ? JSON.parse(saved) : { showBadgeNotifications: true };
   });
   
   const [profileForm, setProfileForm] = useState({
@@ -106,7 +107,12 @@ export const Settings: React.FC = () => {
   };
 
   const handleNotificationSettingsUpdate = (key: string, value: boolean) => {
-    setNotificationSettings(prev => ({ ...prev, [key]: value }));
+    const newSettings = { ...notificationSettings, [key]: value };
+    setNotificationSettings(newSettings);
+    
+    // Save to localStorage
+    localStorage.setItem('notificationSettings', JSON.stringify(newSettings));
+    
     toast({
       title: "Configurações atualizadas",
       description: "Suas preferências de notificação foram salvas."

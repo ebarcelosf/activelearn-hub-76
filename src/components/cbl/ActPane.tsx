@@ -59,16 +59,14 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update, onPhaseTransitio
       files: prototype.files || [],
     });
     
-    // Trigger badges de protótipos after a short delay to ensure the DB is updated
-    setTimeout(() => {
-      const totalPrototypes = dbPrototypes.length;
-      console.log('Total prototypes after add:', totalPrototypes);
-      if (totalPrototypes === 1) {
-        checkTrigger && checkTrigger('prototype_created');
-      } else if (totalPrototypes >= 3) {
-        checkTrigger && checkTrigger('multiple_prototypes_created', { prototypesCount: totalPrototypes });
-      }
-    }, 1000);
+    // Trigger badges based on current count + 1
+    const newCount = dbPrototypes.length + 1;
+    if (newCount === 1) {
+      checkTrigger('prototype_created');
+    }
+    if (newCount >= 3) {
+      checkTrigger('multiple_prototypes_created', { prototypesCount: newCount });
+    }
   }
 
   // Atualizar protótipo
@@ -159,7 +157,7 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update, onPhaseTransitio
       title: 'Prototypes',
       icon: '🛠️',
       description: 'Crie e teste protótipos funcionais',
-      completed: (data.prototypes || []).length > 0
+      completed: dbPrototypes.length > 0
     }
   ];
 

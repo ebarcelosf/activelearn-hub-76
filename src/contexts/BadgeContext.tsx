@@ -42,6 +42,17 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
   
   const { earnedBadges: rawEarnedBadges, grantBadge: grantBadgeHook, canEarnBadge, getBadgesByCategory, totalXP, level, xpForNextLevel } = useBadges();
 
+  // Listen for badge events from components
+  React.useEffect(() => {
+    const handleBadgeEvent = (event: CustomEvent) => {
+      const { trigger, data } = event.detail;
+      checkTrigger(trigger, data);
+    };
+
+    window.addEventListener('badge-trigger', handleBadgeEvent as EventListener);
+    return () => window.removeEventListener('badge-trigger', handleBadgeEvent as EventListener);
+  }, []);
+
   // Transform earned badges for compatibility  
   const earnedBadges = rawEarnedBadges.map(badge => ({
     id: badge.badge_id,
@@ -61,14 +72,30 @@ export const BadgeProvider: React.FC<BadgeProviderProps> = ({ children }) => {
   const checkTrigger = (trigger: string, data?: any) => {
     console.log('Badge trigger:', trigger, data);
     
-    // Check which badges should be granted based on the trigger
-    const badgesToCheck = BADGE_LIST.filter(badge => badge.trigger === trigger);
-    
-    badgesToCheck.forEach(badge => {
-      if (canEarnBadge(badge.id)) {
-        grantBadge(badge.id);
+    // Special handling for CBL cycle completion
+    if (trigger === 'act_completed') {
+      // First trigger the act completion badge
+      if (canEarnBadge('implementador')) {
+        grantBadge('implementador');
       }
-    });
+      
+      // Check if the entire CBL cycle is completed by checking if all phases are done
+      // This would need to be passed from the component or checked via project state
+      setTimeout(() => {
+        if (canEarnBadge('mestre_cbl')) {
+          grantBadge('mestre_cbl');
+        }
+      }, 500);
+    } else {
+      // Check which badges should be granted based on the trigger
+      const badgesToCheck = BADGE_LIST.filter(badge => badge.trigger === trigger);
+      
+      badgesToCheck.forEach(badge => {
+        if (canEarnBadge(badge.id)) {
+          grantBadge(badge.id);
+        }
+      });
+    }
   };
 
   const dismissNotification = () => {

@@ -14,7 +14,310 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      activities: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          notes: string | null
+          project_id: string
+          status: string | null
+          title: string
+          type: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          notes?: string | null
+          project_id: string
+          status?: string | null
+          title: string
+          type?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          notes?: string | null
+          project_id?: string
+          status?: string | null
+          title?: string
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_items: {
+        Row: {
+          done: boolean | null
+          id: string
+          phase: string
+          project_id: string
+          text: string
+        }
+        Insert: {
+          done?: boolean | null
+          id?: string
+          phase: string
+          project_id: string
+          text: string
+        }
+        Update: {
+          done?: boolean | null
+          id?: string
+          phase?: string
+          project_id?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guiding_questions: {
+        Row: {
+          answer: string | null
+          id: string
+          project_id: string
+          question: string
+        }
+        Insert: {
+          answer?: string | null
+          id?: string
+          project_id: string
+          question: string
+        }
+        Update: {
+          answer?: string | null
+          id?: string
+          project_id?: string
+          question?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guiding_questions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          id: string
+          level: number | null
+          name: string
+          updated_at: string | null
+          xp: number | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id: string
+          level?: number | null
+          name: string
+          updated_at?: string | null
+          xp?: number | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id?: string
+          level?: number | null
+          name?: string
+          updated_at?: string | null
+          xp?: number | null
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          act_completed: boolean | null
+          big_idea: string | null
+          challenge: string | null
+          created_at: string | null
+          description: string | null
+          engage_completed: boolean | null
+          essential_question: string | null
+          evaluation: Json | null
+          id: string
+          implementation: Json | null
+          investigate_completed: boolean | null
+          phase: string | null
+          solution: Json | null
+          synthesis: Json | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          act_completed?: boolean | null
+          big_idea?: string | null
+          challenge?: string | null
+          created_at?: string | null
+          description?: string | null
+          engage_completed?: boolean | null
+          essential_question?: string | null
+          evaluation?: Json | null
+          id?: string
+          implementation?: Json | null
+          investigate_completed?: boolean | null
+          phase?: string | null
+          solution?: Json | null
+          synthesis?: Json | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          act_completed?: boolean | null
+          big_idea?: string | null
+          challenge?: string | null
+          created_at?: string | null
+          description?: string | null
+          engage_completed?: boolean | null
+          essential_question?: string | null
+          evaluation?: Json | null
+          id?: string
+          implementation?: Json | null
+          investigate_completed?: boolean | null
+          phase?: string | null
+          solution?: Json | null
+          synthesis?: Json | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      prototypes: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          fidelity: string | null
+          files: string[] | null
+          id: string
+          next_steps: string | null
+          project_id: string
+          test_results: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          fidelity?: string | null
+          files?: string[] | null
+          id?: string
+          next_steps?: string | null
+          project_id: string
+          test_results?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          fidelity?: string | null
+          files?: string[] | null
+          id?: string
+          next_steps?: string | null
+          project_id?: string
+          test_results?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prototypes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resources: {
+        Row: {
+          created_at: string | null
+          credibility: string | null
+          id: string
+          notes: string | null
+          project_id: string
+          tags: string[] | null
+          title: string
+          type: string | null
+          url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          credibility?: string | null
+          id?: string
+          notes?: string | null
+          project_id: string
+          tags?: string[] | null
+          title: string
+          type?: string | null
+          url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          credibility?: string | null
+          id?: string
+          notes?: string | null
+          project_id?: string
+          tags?: string[] | null
+          title?: string
+          type?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resources_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_badges: {
+        Row: {
+          badge_id: string
+          earned_at: string | null
+          id: number
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          earned_at?: string | null
+          id?: never
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          earned_at?: string | null
+          id?: never
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

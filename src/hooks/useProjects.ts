@@ -37,6 +37,13 @@ export interface Project {
 export const useProjects = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  
+  // Check if notifications are enabled
+  const canShowNotification = () => {
+    const saved = localStorage.getItem('notificationSettings');
+    const settings = saved ? JSON.parse(saved) : { showAllNotifications: true };
+    return settings.showAllNotifications;
+  };
 
   // Fetch projects
   const { data: projects = [], isLoading } = useQuery({
@@ -103,10 +110,14 @@ export const useProjects = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
-      toast.success('Projeto criado com sucesso!');
+      if (canShowNotification()) {
+        toast.success('Projeto criado com sucesso!');
+      }
     },
     onError: () => {
-      toast.error('Erro ao criar projeto');
+      if (canShowNotification()) {
+        toast.error('Erro ao criar projeto');
+      }
     },
   });
 
@@ -162,7 +173,9 @@ export const useProjects = () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
     },
     onError: () => {
-      toast.error('Erro ao atualizar projeto');
+      if (canShowNotification()) {
+        toast.error('Erro ao atualizar projeto');
+      }
     },
   });
 
@@ -178,10 +191,14 @@ export const useProjects = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
-      toast.success('Projeto excluído com sucesso!');
+      if (canShowNotification()) {
+        toast.success('Projeto excluído com sucesso!');
+      }
     },
     onError: () => {
-      toast.error('Erro ao excluir projeto');
+      if (canShowNotification()) {
+        toast.error('Erro ao excluir projeto');
+      }
     },
   });
 

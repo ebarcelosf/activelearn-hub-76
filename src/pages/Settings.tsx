@@ -30,7 +30,7 @@ export const Settings: React.FC = () => {
   
   const [notificationSettings, setNotificationSettings] = useState(() => {
     const saved = localStorage.getItem('notificationSettings');
-    return saved ? JSON.parse(saved) : { showBadgeNotifications: true };
+    return saved ? JSON.parse(saved) : { showBadgeNotifications: true, showAllNotifications: true };
   });
   
   const [profileForm, setProfileForm] = useState({
@@ -344,19 +344,37 @@ export const Settings: React.FC = () => {
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Label>Notificações de conquistas</Label>
+                <Label>Notificações gerais</Label>
                 <p className="text-sm text-muted-foreground">
-                  Receba notificações pop-up ao desbloquear novas conquistas durante os projetos
+                  Ativar ou desativar todas as notificações da aplicação
                 </p>
               </div>
               <Switch
-                checked={notificationSettings.showBadgeNotifications}
+                checked={notificationSettings.showAllNotifications}
                 onCheckedChange={(checked) => 
-                  handleNotificationSettingsUpdate('showBadgeNotifications', checked)
+                  handleNotificationSettingsUpdate('showAllNotifications', checked)
                 }
                 disabled={isLoading}
               />
             </div>
+            
+            {notificationSettings.showAllNotifications && (
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label>Notificações de conquistas</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Receba notificações pop-up ao desbloquear novas conquistas durante os projetos
+                  </p>
+                </div>
+                <Switch
+                  checked={notificationSettings.showBadgeNotifications}
+                  onCheckedChange={(checked) => 
+                    handleNotificationSettingsUpdate('showBadgeNotifications', checked)
+                  }
+                  disabled={isLoading}
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
 

@@ -9,18 +9,25 @@ export const BadgeNotificationToast: React.FC = () => {
   // Check if notifications are enabled in settings
   const [notificationSettings, setNotificationSettings] = React.useState(() => {
     const saved = localStorage.getItem('notificationSettings');
-    return saved ? JSON.parse(saved) : { showBadgeNotifications: true };
+    return saved ? JSON.parse(saved) : { showBadgeNotifications: true, showAllNotifications: true };
   });
 
   useEffect(() => {
-    const settings = localStorage.getItem('notificationSettings');
-    if (settings) {
-      setNotificationSettings(JSON.parse(settings));
-    }
+    const handleStorageChange = () => {
+      const settings = localStorage.getItem('notificationSettings');
+      if (settings) {
+        setNotificationSettings(JSON.parse(settings));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    handleStorageChange(); // Initial load
+    
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   useEffect(() => {
-    if (badgeContext?.showNotification && badgeContext?.recentBadge && notificationSettings.showBadgeNotifications) {
+    if (badgeContext?.showNotification && badgeContext?.recentBadge && notificationSettings.showBadgeNotifications && notificationSettings.showAllNotifications) {
       const badge = ALL_BADGES[badgeContext.recentBadge];
       
       if (badge) {
@@ -31,11 +38,11 @@ export const BadgeNotificationToast: React.FC = () => {
         
         badgeContext.dismissNotification();
       }
-    } else if (badgeContext?.showNotification && !notificationSettings.showBadgeNotifications) {
+    } else if (badgeContext?.showNotification) {
       // Still dismiss the notification even if not showing
       badgeContext.dismissNotification();
     }
-  }, [badgeContext?.showNotification, badgeContext?.recentBadge, badgeContext, notificationSettings.showBadgeNotifications]);
+  }, [badgeContext?.showNotification, badgeContext?.recentBadge, badgeContext, notificationSettings.showBadgeNotifications, notificationSettings.showAllNotifications]);
 
   return null;
 };

@@ -61,11 +61,17 @@ export const usePrototypes = (projectId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['prototypes', projectId] });
-      toast.success('Protótipo criado com sucesso!');
+      const settings = JSON.parse(localStorage.getItem('notificationSettings') || '{"showAllNotifications": true}');
+      if (settings.showAllNotifications) {
+        toast.success('Protótipo criado com sucesso!');
+      }
     },
     onError: (error) => {
       console.error('Erro ao criar protótipo:', error);
-      toast.error('Erro ao criar protótipo');
+      const settings = JSON.parse(localStorage.getItem('notificationSettings') || '{"showAllNotifications": true}');
+      if (settings.showAllNotifications) {
+        toast.error('Erro ao criar protótipo');
+      }
     },
   });
 
@@ -83,11 +89,17 @@ export const usePrototypes = (projectId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['prototypes', projectId] });
-      toast.success('Protótipo atualizado com sucesso!');
+      const settings = JSON.parse(localStorage.getItem('notificationSettings') || '{"showAllNotifications": true}');
+      if (settings.showAllNotifications) {
+        toast.success('Protótipo atualizado com sucesso!');
+      }
     },
     onError: (error) => {
       console.error('Erro ao atualizar protótipo:', error);
-      toast.error('Erro ao atualizar protótipo');
+      const settings = JSON.parse(localStorage.getItem('notificationSettings') || '{"showAllNotifications": true}');
+      if (settings.showAllNotifications) {
+        toast.error('Erro ao atualizar protótipo');
+      }
     },
   });
 
@@ -105,11 +117,17 @@ export const usePrototypes = (projectId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['prototypes', projectId] });
-      toast.success('Protótipo removido com sucesso!');
+      const settings = JSON.parse(localStorage.getItem('notificationSettings') || '{"showAllNotifications": true}');
+      if (settings.showAllNotifications) {
+        toast.success('Protótipo removido com sucesso!');
+      }
     },
     onError: (error) => {
       console.error('Erro ao remover protótipo:', error);
-      toast.error('Erro ao remover protótipo');
+      const settings = JSON.parse(localStorage.getItem('notificationSettings') || '{"showAllNotifications": true}');
+      if (settings.showAllNotifications) {
+        toast.error('Erro ao remover protótipo');
+      }
     },
   });
 

@@ -61,8 +61,8 @@ const SidebarInner: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       path: `/project/${currentProject.id}/act`,
       phase: 'act' as const,
       description: 'Desenvolver e implementar',
-      status: currentProject.solution?.description && currentProject.prototypes.length > 0 ? 'completed' :
-              currentProject.solution?.description || currentProject.implementation?.overview ? 'progress' : 'pending'
+      status: currentProject.act_completed ? 'completed' :
+              currentProject.solution?.description || currentProject.implementation?.overview || (currentProject.prototypes && currentProject.prototypes.length > 0) ? 'progress' : 'pending'
     },
   ] : [];
 

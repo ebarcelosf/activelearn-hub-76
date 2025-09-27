@@ -6,6 +6,10 @@ import { SynthesisManager } from '@/components/shared/SynthesisManager';
 import { ChecklistEditorCard } from '@/components/shared/ChecklistEditorCard';
 import { useBadgeContextOptional } from '@/contexts/BadgeContext';
 import { useNudges } from '@/hooks/useNudges';
+import { useGuidingQuestions } from '@/hooks/useGuidingQuestions';
+import { useActivities } from '@/hooks/useActivities';
+import { useResources } from '@/hooks/useResources';
+import { useChecklistItems } from '@/hooks/useChecklistItems';
 import { NudgeModal } from '@/components/shared/NudgeModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -23,14 +27,18 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
   const badge = useBadgeContextOptional();
   const checkTrigger = badge?.checkTrigger ?? (() => {});
   const { isModalOpen, currentCategory, currentPhase, openNudgeModal, closeModal } = useNudges();
+  
+  // Use database hooks for separate entities
+  const { questions, addQuestion, updateAnswer, removeQuestion } = useGuidingQuestions(data.id);
+  const { activities, addActivity, updateActivity, toggleStatus, removeActivity } = useActivities(data.id);
+  const { resources, addResource, updateResource, removeResource } = useResources(data.id);
+  const { items: checklistItems, addItem, toggleItem, removeItem } = useChecklistItems(data.id, 'investigate');
 
-  function setAnswer(idx: number, text: string) {
-    const answers = [...(data.answers || [])];
-    answers[idx] = { q: data.guidingQuestions[idx], a: text };
-    update('answers', answers);
-
+  function handleAnswerChange(questionId: string, answer: string) {
+    updateAnswer(questionId, answer);
+    
     // Verificar badges de perguntas respondidas
-    const answeredCount = answers.filter(a => a && a.a && a.a.trim().length > 0).length;
+    const answeredCount = questions.filter(q => q.answer && q.answer.trim().length > 0).length;
     if (answeredCount === 1) {
       checkTrigger('first_question_answered');
     } else if (answeredCount === 3) {
@@ -40,101 +48,40 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
     }
   }
 
-  function addGuidingQuestion(text: string) {
+  function handleAddQuestion(text: string) {
     if (!text.trim()) return;
-    const newQuestions = [...(data.guidingQuestions || []), text.trim()];
-    update('guidingQuestions', newQuestions);
+    addQuestion(text.trim());
   }
 
-  function removeGuidingQuestion(index: number) {
-    const newQuestions = (data.guidingQuestions || []).filter((_: any, i: number) => i !== index);
-    const newAnswers = (data.answers || []).filter((_: any, i: number) => i !== index);
-    update('guidingQuestions', newQuestions);
-    update('answers', newAnswers);
+  function handleRemoveQuestion(questionId: string) {
+    removeQuestion(questionId);
   }
 
-  // Guiding Activities Functions
-  function addActivity(newActivity: any) {
-    const activities = [...(data.activities || []), newActivity];
-    update('activities', activities);
+  // Trigger badges for activities
+  const handleAddActivity = (activityData: any) => {
+    addActivity(activityData);
     
     // Trigger badge de primeira atividade
-    if (activities.length === 1) {
+    if ((activities?.length || 0) === 0) {
       checkTrigger('activity_created');
     }
-  }
+  };
 
-  function updateActivity(id: string, updatedData: any) {
-    const activities = (data.activities || []).map((act: any) =>
-      act.id === id ? { ...act, ...updatedData, updatedAt: new Date().toISOString() } : act
-    );
-    update('activities', activities);
-  }
-
-  function toggleActivityStatus(id: string) {
-    const activities = (data.activities || []).map((act: any) => {
-      if (act.id !== id) return act;
-      const current: 'planned' | 'in-progress' | 'completed' = act.status || 'planned';
-      const next: 'planned' | 'in-progress' | 'completed' =
-        current === 'planned' ? 'in-progress' : current === 'in-progress' ? 'completed' : 'planned';
-      return {
-        ...act,
-        status: next,
-        completedAt: next === 'completed' ? new Date().toISOString() : undefined,
-        updatedAt: new Date().toISOString(),
-      };
-    });
-    update('activities', activities);
-  }
-
-  function removeActivity(id: string) {
-    const activities = (data.activities || []).filter((act: any) => act.id !== id);
-    update('activities', activities);
-  }
-
-  // Guiding Resources Functions
-  function addResource(newResource: any) {
-    const resources = [...(data.resources || []), newResource];
-    update('resources', resources);
+  // Trigger badges for resources
+  const handleAddResource = (resourceData: any) => {
+    addResource(resourceData);
+    
     // Badge triggers for resources
-    checkTrigger('resources_added', { resourcesCount: resources.length });
-    if (resources.length >= 3) {
-      checkTrigger('multiple_resources_collected', { resourcesCount: resources.length });
+    const currentCount = resources?.length || 0;
+    checkTrigger('resources_added', { resourcesCount: currentCount + 1 });
+    if (currentCount + 1 >= 3) {
+      checkTrigger('multiple_resources_collected', { resourcesCount: currentCount + 1 });
     }
-  }
-
-  function updateResource(id: string, updatedData: any) {
-    const resources = (data.resources || []).map((res: any) =>
-      res.id === id ? { ...res, ...updatedData, updatedAt: new Date().toISOString() } : res
-    );
-    update('resources', resources);
-  }
-
-  function removeResource(id: string) {
-    const resources = (data.resources || []).filter((res: any) => res.id !== id);
-    update('resources', resources);
-  }
+  };
 
   function updateSynthesis(field: string, value: any) {
     const synthesis = { ...data.synthesis, [field]: value };
     update('synthesis', synthesis);
-  }
-
-  function addChecklist(text: string) {
-    const newItem = { id: Date.now(), text, done: false };
-    update('investigateChecklistItems', [...(data.investigateChecklistItems || []), newItem]);
-  }
-
-  function toggleChecklist(id: number) {
-    const checklist = (data.investigateChecklistItems || []).map((item: any) => 
-      item.id === id ? { ...item, done: !item.done } : item
-    );
-    update('investigateChecklistItems', checklist);
-  }
-
-  function removeChecklistItem(id: number) {
-    const checklist = (data.investigateChecklistItems || []).filter((item: any) => item.id !== id);
-    update('investigateChecklistItems', checklist);
   }
 
   function markComplete() {
@@ -144,9 +91,14 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
     // Marcar fase como concluída
     update('investigateCompleted', true);
     checkTrigger('investigate_completed', { questionsAnswered: answeredCount });
+    
     // Marcar todos os itens da checklist da fase como concluídos
-    const completedChecklist = (data.investigateChecklistItems || []).map((item: any) => ({ ...item, done: true }));
-    update('investigateChecklistItems', completedChecklist);
+    checklistItems.forEach(item => {
+      if (!item.done) {
+        toggleItem(item.id);
+      }
+    });
+    
     // Navegar para a próxima fase
     if (onPhaseTransition) {
       onPhaseTransition('act');
@@ -154,11 +106,9 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
   }
 
   // Verificar conclusão das seções
-  const activities = data.activities || [];
-  const resources = data.resources || [];
   const synthesis = data.synthesis || {};
-  const answeredCount = (data.answers || []).filter((a: any) => a && a.a && a.a.trim().length > 0).length;
-  const questionsCount = (data.guidingQuestions || []).length;
+  const answeredCount = questions.filter(q => q.answer && q.answer.trim().length > 0).length;
+  const questionsCount = questions.length;
   
   // Critérios de conclusão: 1 pergunta, 1 atividade, 1 recurso e síntese preenchida
   const hasQuestion = questionsCount >= 1;
@@ -265,7 +215,7 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              {(data.guidingQuestions || []).length === 0 && (
+              {questions.length === 0 && (
                 <Card className="text-center py-8">
                   <CardContent>
                     <div className="text-6xl mb-4">🔍</div>
@@ -278,15 +228,15 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
               )}
 
               <div className="space-y-4">
-                {(data.guidingQuestions || []).map((q: string, i: number) => (
-                  <Card key={i}>
+                {questions.map((question) => (
+                  <Card key={question.id}>
                     <CardHeader className="pb-3">
                       <div className="flex justify-between items-start">
-                        <CardTitle className="text-base flex-1">{q}</CardTitle>
+                        <CardTitle className="text-base flex-1">{question.question}</CardTitle>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => removeGuidingQuestion(i)}
+                          onClick={() => handleRemoveQuestion(question.id)}
                           className="text-destructive hover:text-destructive ml-2"
                         >
                           ✕
@@ -295,15 +245,15 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
                     </CardHeader>
                     <CardContent className="pt-0 space-y-3">
                       <textarea
-                        value={(data.answers && data.answers[i] && data.answers[i].a) || ''}
-                        onChange={(e) => setAnswer(i, e.target.value)}
+                        value={question.answer || ''}
+                        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
                         placeholder="Digite sua resposta aqui..."
                         rows={3}
                         className="w-full p-3 rounded-lg bg-background border text-foreground focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200"
                       />
-                      {data.answers && data.answers[i] && data.answers[i].a && data.answers[i].a.trim().length > 0 && (
+                      {question.answer && question.answer.trim().length > 0 && (
                         <Badge variant="secondary" className="bg-green-100 text-green-800">
-                          ✅ Respondida ({data.answers[i].a.trim().length} caracteres)
+                          ✅ Respondida ({question.answer.trim().length} caracteres)
                         </Badge>
                       )}
                     </CardContent>
@@ -312,7 +262,7 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
               </div>
 
               <div className="mt-6">
-                <AddQuestionForm onAdd={addGuidingQuestion} />
+                <AddQuestionForm onAdd={handleAddQuestion} />
               </div>
             </CardContent>
           </Card>
@@ -337,10 +287,10 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
             </div>
             <ActivityManager
               activities={activities}
-              onAdd={addActivity}
+              onAdd={handleAddActivity}
               onUpdate={updateActivity}
               onRemove={removeActivity}
-              onToggleStatus={toggleActivityStatus}
+              onToggleStatus={toggleStatus}
               title=""
               description=""
             />
@@ -366,7 +316,7 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
             </div>
             <ResourceManager
               resources={resources}
-              onAdd={addResource}
+              onAdd={handleAddResource}
               onUpdate={updateResource}
               onRemove={removeResource}
               title=""
@@ -408,10 +358,10 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
 
         {/* Checklist Personalizada */}
         <ChecklistEditorCard
-          items={data.investigateChecklistItems || []}
-          onAdd={addChecklist}
-          onToggle={toggleChecklist}
-          onRemove={removeChecklistItem}
+          items={checklistItems.map(item => ({ id: parseInt(item.id), text: item.text, done: item.done }))}
+          onAdd={addItem}
+          onToggle={(id: number) => toggleItem(id.toString())}
+          onRemove={(id: number) => removeItem(id.toString())}
           title="Checklist da Fase Investigate"
           description="Adicione tarefas específicas para esta fase"
         />

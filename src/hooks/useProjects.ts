@@ -113,9 +113,35 @@ export const useProjects = () => {
   // Update project mutation
   const updateProjectMutation = useMutation({
     mutationFn: async ({ projectId, updates }: { projectId: string; updates: Partial<Project> }) => {
+      // Map legacy field names to database field names
+      const dbUpdates: any = { ...updates };
+      
+      // Map legacy fields to database fields
+      if ('bigIdea' in updates) {
+        dbUpdates.big_idea = updates.bigIdea;
+        delete dbUpdates.bigIdea;
+      }
+      if ('essentialQuestion' in updates) {
+        dbUpdates.essential_question = updates.essentialQuestion;
+        delete dbUpdates.essentialQuestion;
+      }
+      
+      // Remove legacy compatibility fields that don't exist in database
+      delete dbUpdates.lastModified;
+      delete dbUpdates.createdAt;
+      delete dbUpdates.updatedAt;
+      delete dbUpdates.answers;
+      delete dbUpdates.activities;
+      delete dbUpdates.resources;
+      delete dbUpdates.prototypes;
+      delete dbUpdates.progress;
+      delete dbUpdates.engageChecklistItems;
+      delete dbUpdates.investigateChecklistItems;
+      delete dbUpdates.actChecklistItems;
+
       const { error } = await supabase
         .from('projects')
-        .update(updates)
+        .update(dbUpdates)
         .eq('id', projectId);
 
       if (error) throw error;

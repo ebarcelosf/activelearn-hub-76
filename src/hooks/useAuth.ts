@@ -60,7 +60,10 @@ export const useAuth = () => {
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      if (!session) {
+      if (session?.user) {
+        // If we already have a session on load, fetch the profile immediately
+        fetchUserProfile(session.user.id, session.user.email!);
+      } else {
         setIsLoading(false);
       }
     });
@@ -75,22 +78,34 @@ export const useAuth = () => {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
-        
-      if (profile) {
-        setUser({
-          id: profile.id,
-          name: profile.name,
-          email: email,
-          avatar_url: profile.avatar_url,
-          xp: profile.xp,
-          level: profile.level,
-          created_at: profile.created_at,
-          updated_at: profile.updated_at
-        });
+        .maybeSingle();
+
+      let finalProfile = profile;
+
+      // Auto-provision profile if missing
+      if (!finalProfile) {
+        const defaultName = email.split('@')[0];
+        const { data: inserted, error: insertError } = await supabase
+          .from('profiles')
+          .insert({ id: userId, name: defaultName })
+          .select()
+          .single();
+        if (insertError) throw insertError;
+        finalProfile = inserted;
       }
+      
+      setUser({
+        id: finalProfile.id,
+        name: finalProfile.name,
+        email: email,
+        avatar_url: finalProfile.avatar_url,
+        xp: finalProfile.xp,
+        level: finalProfile.level,
+        created_at: finalProfile.created_at,
+        updated_at: finalProfile.updated_at
+      });
     } catch (err) {
-      console.error('Erro ao buscar perfil do usuário:', err);
+      console.error('Erro ao buscar/criar perfil do usuário:', err);
     } finally {
       setIsLoading(false);
     }

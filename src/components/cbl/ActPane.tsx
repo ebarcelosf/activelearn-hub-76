@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Lightbulb } from 'lucide-react';
+import { useChecklistItems } from '@/hooks/useChecklistItems';
 
 interface ActPaneProps {
   data: any;
@@ -69,22 +70,12 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update, onPhaseTransitio
     update('prototypes', prototypes);
   }
 
-  function addChecklist(text: string) {
-    const newItem = { id: Date.now(), text, done: false };
-    update('actChecklistItems', [...(data.actChecklistItems || []), newItem]);
-  }
-
-  function toggleChecklist(id: number) {
-    const checklist = (data.actChecklistItems || []).map((item: any) => 
-      item.id === id ? { ...item, done: !item.done } : item
-    );
-    update('actChecklistItems', checklist);
-  }
-
-  function removeChecklistItem(id: number) {
-    const checklist = (data.actChecklistItems || []).filter((item: any) => item.id !== id);
-    update('actChecklistItems', checklist);
-  }
+  const {
+    items: actChecklist,
+    addItem: addActItem,
+    toggleItem: toggleActItem,
+    removeItem: removeActItem
+  } = useChecklistItems(data.id, 'act');
 
   function markComplete() {
     // Verificar se todos os requisitos básicos foram atendidos
@@ -108,9 +99,12 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update, onPhaseTransitio
       onPhaseTransition('completed');
     }
     
-    // Mark all checklist items as done
-    const completedChecklist = (data.actChecklistItems || []).map((item: any) => ({ ...item, done: true }));
-    update('actChecklistItems', completedChecklist);
+    // Marcar todos os itens da checklist da fase como concluídos no banco
+    actChecklist.forEach(item => {
+      if (!item.done) {
+        toggleActItem(item.id);
+      }
+    });
   }
 
   // Verificar conclusão das seções
@@ -284,10 +278,10 @@ export const ActPane: React.FC<ActPaneProps> = ({ data, update, onPhaseTransitio
 
         {/* Checklist Personalizada */}
         <ChecklistEditorCard
-          items={data.actChecklistItems || []} 
-          onAdd={addChecklist} 
-          onToggle={toggleChecklist}
-          onRemove={removeChecklistItem}
+          items={actChecklist.map(item => ({ id: item.id, text: item.text, done: item.done }))}
+          onAdd={addActItem}
+          onToggle={toggleActItem}
+          onRemove={removeActItem}
           title="Checklist da Fase Act"
           description="Adicione tarefas específicas para esta fase"
         />

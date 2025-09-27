@@ -59,7 +59,14 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
 
   // Trigger badges for activities
   const handleAddActivity = (activityData: any) => {
-    addActivity(activityData);
+    // Ensure only DB-allowed fields are sent
+    addActivity({
+      title: activityData.title,
+      description: activityData.description,
+      type: activityData.type,
+      status: activityData.status || 'planned',
+      notes: activityData.notes,
+    });
     
     // Trigger badge de primeira atividade
     if ((activities?.length || 0) === 0) {
@@ -69,7 +76,15 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
 
   // Trigger badges for resources
   const handleAddResource = (resourceData: any) => {
-    addResource(resourceData);
+    // Ensure only DB-allowed fields are sent
+    addResource({
+      title: resourceData.title,
+      url: resourceData.url,
+      type: resourceData.type,
+      credibility: resourceData.credibility,
+      notes: resourceData.notes,
+      tags: resourceData.tags,
+    });
     
     // Badge triggers for resources
     const currentCount = resources?.length || 0;
@@ -358,10 +373,10 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
 
         {/* Checklist Personalizada */}
         <ChecklistEditorCard
-          items={checklistItems.map(item => ({ id: parseInt(item.id), text: item.text, done: item.done }))}
+          items={checklistItems.map(item => ({ id: item.id, text: item.text, done: item.done }))}
           onAdd={addItem}
-          onToggle={(id: number) => toggleItem(id.toString())}
-          onRemove={(id: number) => removeItem(id.toString())}
+          onToggle={(id: string) => toggleItem(id)}
+          onRemove={(id: string) => removeItem(id)}
           title="Checklist da Fase Investigate"
           description="Adicione tarefas específicas para esta fase"
         />

@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Trash2, Plus, Check } from 'lucide-react';
 
 interface ChecklistItem {
-  id: number;
+  id: string;
   text: string;
   done: boolean;
 }
@@ -12,8 +12,8 @@ interface ChecklistItem {
 interface ChecklistEditorProps {
   items: ChecklistItem[];
   onAdd: (text: string) => void;
-  onToggle: (id: number) => void;
-  onRemove: (id: number) => void;
+  onToggle: (id: string) => void;
+  onRemove: (id: string) => void;
 }
 
 export const ChecklistEditor: React.FC<ChecklistEditorProps> = ({

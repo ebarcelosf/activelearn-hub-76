@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Lightbulb } from 'lucide-react';
+import { useChecklistItems } from '@/hooks/useChecklistItems';
 
 interface EngagePaneProps {
   data: any;
@@ -35,22 +36,12 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update, onPhaseTra
     }
   };
 
-  function addChecklist(text: string) {
-    const newItem = { id: Date.now(), text, done: false };
-    update('engageChecklistItems', [...(data.engageChecklistItems || []), newItem]);
-  }
-
-  function toggleChecklist(id: number) {
-    const updatedChecklist = (data.engageChecklistItems || []).map((item: any) => 
-      item.id === id ? { ...item, done: !item.done } : item
-    );
-    update('engageChecklistItems', updatedChecklist);
-  }
-
-  function removeChecklist(id: number) {
-    const updatedChecklist = (data.engageChecklistItems || []).filter((item: any) => item.id !== id);
-    update('engageChecklistItems', updatedChecklist);
-  }
+  const { 
+    items: engageChecklist, 
+    addItem: addEngageItem, 
+    toggleItem: toggleEngageItem, 
+    removeItem: removeEngageItem 
+  } = useChecklistItems(data.id, 'engage');
 
   function markComplete() {
     if (!canComplete) {
@@ -60,9 +51,12 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update, onPhaseTra
     
     update('engageCompleted', true);
     update('phase', 'investigate');
-    // Mark all checklist items as done
-    const completedChecklist = (data.engageChecklistItems || []).map((item: any) => ({ ...item, done: true }));
-    update('engageChecklistItems', completedChecklist);
+    // Marcar todos os itens da checklist da fase como concluídos no banco
+    engageChecklist.forEach(item => {
+      if (!item.done) {
+        toggleEngageItem(item.id);
+      }
+    });
     
     // Trigger badge de conclusão da fase Engage
     checkTrigger('engage_completed');
@@ -319,10 +313,10 @@ export const EngagePane: React.FC<EngagePaneProps> = ({ data, update, onPhaseTra
 
         {/* Checklist Personalizada */}
         <ChecklistEditorCard
-          items={data.engageChecklistItems || []} 
-          onAdd={addChecklist} 
-          onToggle={toggleChecklist} 
-          onRemove={removeChecklist}
+          items={engageChecklist.map(item => ({ id: item.id, text: item.text, done: item.done }))}
+          onAdd={addEngageItem}
+          onToggle={toggleEngageItem}
+          onRemove={removeEngageItem}
           title="Checklist da Fase Engage"
           description="Adicione tarefas específicas para esta fase"
         />

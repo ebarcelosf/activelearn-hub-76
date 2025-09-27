@@ -41,33 +41,19 @@ export const useAuth = () => {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
+        // Only synchronous state updates here
         setSession(session);
         
         if (session?.user) {
-          // Fetch user profile from profiles table
-          const { data: profile, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-            
-          if (profile) {
-            setUser({
-              id: profile.id,
-              name: profile.name,
-              email: session.user.email!,
-              avatar_url: profile.avatar_url,
-              xp: profile.xp,
-              level: profile.level,
-              created_at: profile.created_at,
-              updated_at: profile.updated_at
-            });
-          }
+          // Defer Supabase calls with setTimeout to prevent deadlock
+          setTimeout(() => {
+            fetchUserProfile(session.user.id, session.user.email!);
+          }, 0);
         } else {
           setUser(null);
+          setIsLoading(false);
         }
-        setIsLoading(false);
       }
     );
 
@@ -81,6 +67,34 @@ export const useAuth = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Separate function to fetch user profile
+  const fetchUserProfile = async (userId: string, email: string) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+        
+      if (profile) {
+        setUser({
+          id: profile.id,
+          name: profile.name,
+          email: email,
+          avatar_url: profile.avatar_url,
+          xp: profile.xp,
+          level: profile.level,
+          created_at: profile.created_at,
+          updated_at: profile.updated_at
+        });
+      }
+    } catch (err) {
+      console.error('Erro ao buscar perfil do usuário:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
     try {

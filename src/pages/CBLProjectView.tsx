@@ -31,16 +31,15 @@ export const CBLProjectView: React.FC = () => {
 
   // Lógica de validação de progressão sequencial
   const canAccessPhase = (requestedPhase: string): boolean => {
-    const answeredCount = (project as any).answers?.filter((a: any) => a && a.a && a.a.trim().length > 0).length || 0;
-    const completedActivities = (project as any).activities?.filter((a: any) => a.status === 'completed').length || 0;
-    const hasSynthesis = !!(((project as any).synthesis?.mainFindings) || (project as any).researchSynthesis);
     switch (requestedPhase) {
       case 'engage':
         return true;
       case 'investigate':
-        return !!(((project as any).engageCompleted) || (project.bigIdea && project.essentialQuestion));
+        // Pode acessar se o engage foi marcado como completo OU se tem big idea e essential question
+        return !!(project.engage_completed || (project.bigIdea && project.essentialQuestion));
       case 'act':
-        return !!(((project as any).investigateCompleted) || (answeredCount >= 3 && completedActivities >= 1 && hasSynthesis));
+        // Pode acessar se o investigate foi marcado como completo
+        return !!(project.investigate_completed);
       default:
         return false;
     }

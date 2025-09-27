@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-// Settings are now handled by theme provider
+import { useTheme } from '@/components/ui/theme-provider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 
 export const Settings: React.FC = () => {
   const navigate = useNavigate();
-  // Settings are handled by theme provider now
+  const { theme, setTheme } = useTheme();
   const { 
     user, 
     updateProfile, 
@@ -27,6 +27,12 @@ export const Settings: React.FC = () => {
     error,
     clearError
   } = useAuth();
+  
+  const [notificationSettings, setNotificationSettings] = useState({
+    showBadgeNotifications: true,
+    emailNotifications: false,
+    soundNotifications: true
+  });
   
   const [profileForm, setProfileForm] = useState({
     name: user?.name || ''
@@ -101,11 +107,11 @@ export const Settings: React.FC = () => {
     }
   };
 
-  const handleBadgeSettingsUpdate = (updates: any) => {
-    // updateAuthSettings(updates); // Temporarily disabled
+  const handleNotificationSettingsUpdate = (key: string, value: boolean) => {
+    setNotificationSettings(prev => ({ ...prev, [key]: value }));
     toast({
       title: "Configurações atualizadas",
-      description: "Suas preferências de badge foram salvas."
+      description: "Suas preferências de notificação foram salvas."
     });
   };
 
@@ -289,8 +295,8 @@ export const Settings: React.FC = () => {
             <div className="space-y-2">
               <Label>Tema</Label>
               <Select 
-                value="system" 
-                onValueChange={(value) => {/* Theme change handled by ThemeProvider */}}
+                value={theme} 
+                onValueChange={(value) => setTheme(value as "light" | "dark" | "system")}
               >
                 <SelectTrigger className="w-full sm:w-[200px]">
                   <SelectValue />
@@ -340,9 +346,39 @@ export const Settings: React.FC = () => {
                 </p>
               </div>
               <Switch
-                checked={true}
+                checked={notificationSettings.showBadgeNotifications}
                 onCheckedChange={(checked) => 
-                  handleBadgeSettingsUpdate({ showBadgeNotifications: checked })
+                  handleNotificationSettingsUpdate('showBadgeNotifications', checked)
+                }
+                disabled={isLoading}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label>Notificações por email</Label>
+                <p className="text-sm text-muted-foreground">
+                  Receba atualizações importantes por email
+                </p>
+              </div>
+              <Switch
+                checked={notificationSettings.emailNotifications}
+                onCheckedChange={(checked) => 
+                  handleNotificationSettingsUpdate('emailNotifications', checked)
+                }
+                disabled={isLoading}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label>Sons de notificação</Label>
+                <p className="text-sm text-muted-foreground">
+                  Reproduzir sons ao receber notificações
+                </p>
+              </div>
+              <Switch
+                checked={notificationSettings.soundNotifications}
+                onCheckedChange={(checked) => 
+                  handleNotificationSettingsUpdate('soundNotifications', checked)
                 }
                 disabled={isLoading}
               />

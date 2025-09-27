@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { validateEmail, validatePassword } from '@/utils/auth';
+import { validateEmail, validatePassword } from '@/utils/validation';
 
 export const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);

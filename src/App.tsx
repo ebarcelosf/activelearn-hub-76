@@ -8,7 +8,7 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ProjectProvider } from "@/contexts/ProjectContext";
 import { BadgeProvider } from "@/contexts/BadgeContext";
-import { SettingsProvider } from "@/contexts/SettingsContext";
+
 import { Login } from "@/pages/Login";
 import { Dashboard } from "@/pages/Dashboard";
 import { CBLProjectView } from "@/pages/CBLProjectView";
@@ -79,21 +79,19 @@ const AppRoutes = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="dark">
-      <SettingsProvider>
-        <AuthProvider>
-          <ProjectProvider>
-            <BadgeProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
-                  <AppRoutes />
-                </BrowserRouter>
-              </TooltipProvider>
-            </BadgeProvider>
-          </ProjectProvider>
-        </AuthProvider>
-      </SettingsProvider>
+      <AuthProvider>
+        <ProjectProvider>
+          <BadgeProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <AppRoutes />
+              </BrowserRouter>
+            </TooltipProvider>
+          </BadgeProvider>
+        </ProjectProvider>
+      </AuthProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );

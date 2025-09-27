@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSettings } from '@/contexts/SettingsContext';
+// Settings are now handled by theme provider
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 
 export const Settings: React.FC = () => {
   const navigate = useNavigate();
-  const { settings, updateSettings } = useSettings();
+  // Settings are handled by theme provider now
   const { 
     user, 
     updateProfile, 
@@ -289,7 +289,7 @@ export const Settings: React.FC = () => {
             <div className="space-y-2">
               <Label>Tema</Label>
               <Select 
-                value={settings.theme} 
+                value="system" 
                 onValueChange={(value) => updateSettings({ theme: value as 'light' | 'dark' | 'system' })}
               >
                 <SelectTrigger className="w-full sm:w-[200px]">

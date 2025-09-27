@@ -37,7 +37,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* Badge Notification */}
       {badgeContext?.recentBadge && (
         <BadgeNotification
-          badge={badgeContext.recentBadge}
+          badge={badgeContext.earnedBadges.find(b => b.id === badgeContext.recentBadge) || { id: badgeContext.recentBadge || '', name: '', description: '', icon: '' }}
           show={badgeContext.showNotification}
           onDismiss={badgeContext.dismissNotification}
         />

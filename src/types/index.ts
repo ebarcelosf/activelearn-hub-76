@@ -28,37 +28,43 @@ export interface Badge {
 
 export interface Project {
   id: string;
+  user_id: string;
   title: string;
   description: string;
-  createdAt: Date;
-  updatedAt: Date;
-  lastModified: number;
   phase: 'engage' | 'investigate' | 'act';
-  progress: number;
-
-  // Completion flags
+  engage_completed: boolean;
+  investigate_completed: boolean;
+  act_completed: boolean;
+  big_idea?: string;
+  essential_question?: string;
+  challenge?: string;
+  synthesis?: any;
+  solution?: any;
+  implementation?: any;
+  evaluation?: any;
+  created_at: string;
+  updated_at: string;
+  lastModified: string;
+  
+  // Legacy compatibility fields
+  createdAt: string;
+  updatedAt: string;
+  bigIdea?: string;
+  essentialQuestion?: string;
+  answers?: { q: string; a: string }[];
+  activities?: Activity[];
+  resources?: Resource[];
+  prototypes?: Prototype[];
+  progress?: number;
+  
+  // Completion flags (legacy)
   engageCompleted?: boolean;
   investigateCompleted?: boolean;
   actCompleted?: boolean;
   
-  // Engage Phase (unified)
-  bigIdea?: string;
-  essentialQuestion?: string;
-  challenge?: string;
+  // Checklist items (legacy)
   engageChecklistItems?: ChecklistItem[];
-  
-  // Investigate Phase (unified)
-  answers?: { q: string; a: string }[];
-  activities?: Activity[];
-  resources?: Resource[];
-  synthesis?: { mainFindings?: string };
   investigateChecklistItems?: ChecklistItem[];
-  
-  // Act Phase (unified)
-  solution?: { description?: string };
-  implementation?: { overview?: string };
-  evaluation?: { objectives?: string };
-  prototypes: Prototype[];
   actChecklistItems?: ChecklistItem[];
 }
 

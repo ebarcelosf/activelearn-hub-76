@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
-import { User, Settings as SettingsIcon, Moon, Sun, Monitor, Trash2, Mail, Bell, BellOff, Globe, Shield, Loader2, LogOut } from 'lucide-react';
+import { User, Settings as SettingsIcon, Moon, Sun, Monitor, Trash2, Bell, Shield, Loader2, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const Settings: React.FC = () => {
@@ -30,8 +30,6 @@ export const Settings: React.FC = () => {
   
   const [notificationSettings, setNotificationSettings] = useState({
     showBadgeNotifications: true,
-    emailNotifications: false,
-    soundNotifications: true
   });
   
   const [profileForm, setProfileForm] = useState({
@@ -349,36 +347,6 @@ export const Settings: React.FC = () => {
                 checked={notificationSettings.showBadgeNotifications}
                 onCheckedChange={(checked) => 
                   handleNotificationSettingsUpdate('showBadgeNotifications', checked)
-                }
-                disabled={isLoading}
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label>Notificações por email</Label>
-                <p className="text-sm text-muted-foreground">
-                  Receba atualizações importantes por email
-                </p>
-              </div>
-              <Switch
-                checked={notificationSettings.emailNotifications}
-                onCheckedChange={(checked) => 
-                  handleNotificationSettingsUpdate('emailNotifications', checked)
-                }
-                disabled={isLoading}
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label>Sons de notificação</Label>
-                <p className="text-sm text-muted-foreground">
-                  Reproduzir sons ao receber notificações
-                </p>
-              </div>
-              <Switch
-                checked={notificationSettings.soundNotifications}
-                onCheckedChange={(checked) => 
-                  handleNotificationSettingsUpdate('soundNotifications', checked)
                 }
                 disabled={isLoading}
               />

@@ -38,8 +38,8 @@ export const CBLProjectView: React.FC = () => {
         // Pode acessar se o engage foi marcado como completo OU se tem big idea e essential question
         return !!(project.engage_completed || (project.bigIdea && project.essentialQuestion));
       case 'act':
-        // Pode acessar se o investigate foi marcado como completo
-        return !!(project.investigate_completed);
+        // Pode acessar se o investigate foi marcado como completo ou se a fase já está definida como 'act'
+        return !!(project.investigate_completed || project.phase === 'act');
       default:
         return false;
     }

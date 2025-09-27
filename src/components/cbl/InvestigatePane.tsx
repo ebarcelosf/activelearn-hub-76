@@ -105,6 +105,7 @@ export const InvestigatePane: React.FC<InvestigatePaneProps> = ({ data, update, 
     }
     // Marcar fase como concluída
     update('investigateCompleted', true);
+    update('phase', 'act');
     checkTrigger('investigate_completed', { questionsAnswered: answeredCount });
     
     // Marcar todos os itens da checklist da fase como concluídos

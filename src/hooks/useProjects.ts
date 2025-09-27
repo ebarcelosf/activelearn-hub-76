@@ -118,12 +118,24 @@ export const useProjects = () => {
       
       // Map legacy fields to database fields
       if ('bigIdea' in updates) {
-        dbUpdates.big_idea = updates.bigIdea;
+        dbUpdates.big_idea = updates.bigIdea as any;
         delete dbUpdates.bigIdea;
       }
       if ('essentialQuestion' in updates) {
-        dbUpdates.essential_question = updates.essentialQuestion;
+        dbUpdates.essential_question = updates.essentialQuestion as any;
         delete dbUpdates.essentialQuestion;
+      }
+      if ('engageCompleted' in updates) {
+        (dbUpdates as any).engage_completed = (updates as any).engageCompleted;
+        delete (dbUpdates as any).engageCompleted;
+      }
+      if ('investigateCompleted' in updates) {
+        (dbUpdates as any).investigate_completed = (updates as any).investigateCompleted;
+        delete (dbUpdates as any).investigateCompleted;
+      }
+      if ('actCompleted' in updates) {
+        (dbUpdates as any).act_completed = (updates as any).actCompleted;
+        delete (dbUpdates as any).actCompleted;
       }
       
       // Remove legacy compatibility fields that don't exist in database
